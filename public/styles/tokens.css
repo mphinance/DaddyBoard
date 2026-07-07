@@ -36,19 +36,28 @@
   --shadow-hero:      0 8px 48px hsla(220 60% 4% / 0.70);
   --shadow-card:      0 2px 16px hsla(220 60% 4% / 0.40);
 
-  /* --- Semantic colors (HSL, tasteful) --- */
-  --bull:             hsl(152 62% 46%);    /* green — bullish */
-  --bull-dim:         hsla(152 62% 46% / 0.15);
-  --bull-glow:        hsla(152 62% 46% / 0.25);
-  --bear:             hsl(3   68% 56%);    /* red — bearish */
-  --bear-dim:         hsla(3   68% 56% / 0.15);
-  --bear-glow:        hsla(3   68% 56% / 0.25);
+  /* --- Semantic colors (HSL — neon on navy, reads from 10 feet) --- */
+  --bull:             hsl(150 85% 50%);    /* neon green — bullish */
+  --bull-dim:         hsla(150 85% 50% / 0.16);
+  --bull-glow:        hsla(150 85% 50% / 0.40);
+  --bear:             hsl(2   90% 62%);    /* neon red — bearish */
+  --bear-dim:         hsla(2   90% 62% / 0.16);
+  --bear-glow:        hsla(2   90% 62% / 0.40);
   --neutral:          hsl(210 20% 60%);    /* muted blue-grey */
-  --caution:          hsl(40  90% 56%);    /* amber — warning/neutral */
-  --caution-dim:      hsla(40  90% 56% / 0.15);
-  --accent:           hsl(38  92% 52%);    /* #f59e0b — TraderDaddy Pro gold */
-  --accent-dim:       hsla(38  92% 52% / 0.15);
-  --accent-glow:      hsla(38  92% 52% / 0.22);
+  --caution:          hsl(42  96% 56%);    /* amber — warning/neutral */
+  --caution-dim:      hsla(42  96% 56% / 0.16);
+  --accent:           hsl(40  96% 56%);    /* neon gold — TraderDaddy Pro */
+  --accent-dim:       hsla(40  96% 56% / 0.16);
+  --accent-glow:      hsla(40  96% 56% / 0.38);
+
+  /* --- Neon glow shadows (for big numbers / accents on the wall) --- */
+  --glow-bull:        0 0 14px hsla(150 85% 50% / 0.55);
+  --glow-bear:        0 0 14px hsla(2   90% 62% / 0.50);
+  --glow-accent:      0 0 14px hsla(40  96% 56% / 0.50);
+  --glow-text-bull:   0 0 11px hsla(150 88% 58% / 0.60);
+  --glow-text-bear:   0 0 11px hsla(2   92% 66% / 0.55);
+  --glow-text-accent: 0 0 11px hsla(42  96% 62% / 0.55);
+  --glow-text-soft:   0 0 10px hsla(210 60% 80% / 0.28);
 
   /* --- Brand (TraderDaddy Pro) --- */
   --brand-gold:       hsl(38  92% 52%);
@@ -64,10 +73,10 @@
   --text-secondary:   hsl(210 18% 72%);
   --text-muted:       hsl(210 14% 50%);
   --text-dim:         hsl(210 12% 36%);
-  --text-bull:        hsl(152 60% 54%);
-  --text-bear:        hsl(3   65% 62%);
-  --text-accent:      hsl(40  90% 64%);
-  --text-caution:     hsl(40  88% 62%);
+  --text-bull:        hsl(150 88% 62%);
+  --text-bear:        hsl(2   92% 68%);
+  --text-accent:      hsl(42  96% 66%);
+  --text-caution:     hsl(42  94% 64%);
 
   /* --- Spacing scale (8px base) --- */
   --sp-1:  4px;

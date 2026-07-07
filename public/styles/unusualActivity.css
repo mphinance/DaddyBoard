@@ -45,8 +45,8 @@
   white-space: nowrap;
 }
 
-.ua-agg-bull { color: var(--text-bull); }
-.ua-agg-bear { color: var(--text-bear); }
+.ua-agg-bull { color: var(--text-bull); text-shadow: var(--glow-text-bull); }
+.ua-agg-bear { color: var(--text-bear); text-shadow: var(--glow-text-bear); }
 
 .ua-agg-sep {
   width: 1px;
@@ -88,6 +88,7 @@
   top: 0; bottom: 0;
   border-radius: var(--radius-pill);
   background: var(--bull);
+  box-shadow: var(--glow-bull);
   transition: width var(--transition-slow);
 }
 
@@ -129,9 +130,9 @@
   border-color: var(--border-accent);
 }
 
-/* Bullish row accent */
-.ua-row.is-bull { border-left: 2px solid var(--bull); }
-.ua-row.is-bear { border-left: 2px solid var(--bear); }
+/* Bullish row accent — neon edge */
+.ua-row.is-bull { border-left: 3px solid var(--bull); box-shadow: inset 2px 0 10px -4px var(--bull-glow); }
+.ua-row.is-bear { border-left: 3px solid var(--bear); box-shadow: inset 2px 0 10px -4px var(--bear-glow); }
 
 /* New-row flash animation */
 @keyframes ua-flash-in {
@@ -156,6 +157,7 @@
   color: var(--text-primary);
   letter-spacing: -0.02em;
   white-space: nowrap;
+  text-shadow: var(--glow-text-soft);
 }
 
 .ua-type-badge {
@@ -187,8 +189,8 @@
   font-weight: var(--weight-bold);
   white-space: nowrap;
 }
-.ua-row.is-bull .ua-premium { color: var(--text-bull); }
-.ua-row.is-bear .ua-premium { color: var(--text-bear); }
+.ua-row.is-bull .ua-premium { color: var(--text-bull); text-shadow: var(--glow-text-bull); }
+.ua-row.is-bear .ua-premium { color: var(--text-bear); text-shadow: var(--glow-text-bear); }
 
 .ua-score {
   display: flex;
