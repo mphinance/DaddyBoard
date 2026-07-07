@@ -10,8 +10,33 @@ It reads **your own `td_live_` API key** from a local file and talks only to the
 public TraderDaddy Pro MCP endpoint (read-only). No login, no website, no account
 surface — it's an appliance.
 
-![DaddyBoard](docs/screenshot.png)
-<!-- Add a screenshot: run in MOCK_MODE, open full-screen, capture it. -->
+**Live mode** — your own account's data on the wall:
+
+![DaddyBoard live](docs/screenshot-live.png)
+
+**Demo mode** (`npm run mock`) — realistic sample data, no key required:
+
+![DaddyBoard demo](docs/screenshot-mock.png)
+
+---
+
+## Powered by TraderDaddy Pro
+
+DaddyBoard is a companion appliance for **[TraderDaddy Pro](https://traderdaddy.pro)** —
+the options-flow and smart-money platform. Every panel here is a live read of the
+same institutional data pros pay for: real-time unusual options activity, gamma
+exposure, sector rotation, IV rank, and curated screener setups.
+
+- **See the smart money.** The hero tape is a live feed of large, aggressive
+  options prints — the trades that move markets, as they hit.
+- **Glanceable edge.** Gamma bias, put/call sentiment, and IV rank tell you the
+  regime at a glance, from across the room.
+- **Setups on rotation.** The main stage cycles TraderDaddy's screeners and
+  strategy ideas so there's always something actionable on the wall.
+
+Don't have a key yet? Start with **demo mode** below, then grab an API key at
+**[traderdaddy.pro](https://traderdaddy.pro)** (Developer API access on your plan)
+to light it up with your own live data.
 
 ---
 
@@ -35,7 +60,7 @@ The heavier deep-dive panels follow the day's **hottest ticker** automatically
 Requires **Node ≥ 20**.
 
 ```bash
-cd td-daddyboard
+cd DaddyBoard
 npm install
 ```
 
@@ -99,7 +124,7 @@ Chromium):
 **1. Install Node 20+ and the app**
 ```bash
 sudo apt update && sudo apt install -y nodejs npm chromium-browser unclutter
-cd ~/td-daddyboard && npm install
+cd ~/DaddyBoard && npm install
 cp config.example.json config.json   # add your td_live_ key
 ```
 
@@ -110,7 +135,7 @@ Description=DaddyBoard daemon
 After=network-online.target
 
 [Service]
-WorkingDirectory=%h/td-daddyboard
+WorkingDirectory=%h/DaddyBoard
 ExecStart=/usr/bin/node src/server.js
 Restart=always
 
