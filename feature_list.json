@@ -1,0 +1,318 @@
+[
+  {
+    "id": 1,
+    "category": "functional",
+    "description": "Daemon boots via `MOCK_MODE=true npm start` and listens on the configured port",
+    "steps": [
+      "cd td-daddyboard",
+      "npm install",
+      "MOCK_MODE=true node src/server.js",
+      "confirm it logs a listening port and does not exit"
+    ],
+    "passes": true
+  },
+  {
+    "id": 2,
+    "category": "functional",
+    "description": "GET /api/state returns valid JSON with the full panels contract in mock mode",
+    "steps": [
+      "boot in MOCK_MODE",
+      "curl http://localhost:4321/api/state",
+      "assert JSON parses",
+      "assert top-level keys generatedAt, mockMode:true, market, featuredSymbol, panels",
+      "assert panels has all 12 slots each shaped {data,fetchedAt,stale,error}"
+    ],
+    "passes": true
+  },
+  {
+    "id": 3,
+    "category": "functional",
+    "description": "MCP client speaks JSON-RPC over StreamableHTTP: initialize handshake then tools/call, parsing content[0].text",
+    "steps": [
+      "read src/mcpClient.js",
+      "confirm it sends Accept: application/json, text/event-stream",
+      "confirm it handles both SSE-framed and application/json responses",
+      "confirm it JSON.parses result.content[0].text",
+      "confirm both X-API-Key and Bearer auth headers are set"
+    ],
+    "passes": true
+  },
+  {
+    "id": 4,
+    "category": "functional",
+    "description": "MCP client backs off on HTTP 429 / JSON-RPC -32000 and serves last cached value",
+    "steps": [
+      "read backoff logic",
+      "confirm exponential base 2s cap 60s with jitter",
+      "confirm no tight retry loop",
+      "confirm cached value is served during backoff"
+    ],
+    "passes": true
+  },
+  {
+    "id": 5,
+    "category": "functional",
+    "description": "MOCK_MODE serves realistic fixtures for all 12 tools built from the real tool output shapes",
+    "steps": [
+      "read src/mock/fixtures",
+      "confirm each of the 12 tools has a fixture",
+      "confirm unusualActivity fixture rows match the documented field shape (ticker,type,premium,volume,sentiment,score,tier,tierColor,flowDescription,vsOI)",
+      "confirm fixtures include aggregates/totals where the real tool returns them"
+    ],
+    "passes": true
+  },
+  {
+    "id": 6,
+    "category": "functional",
+    "description": "Config loader reads config.json (apiKey, baseUrl, port, featuredTickers, screenerRotation, rotationSeconds), env overrides, sane defaults",
+    "steps": [
+      "read src/config.js",
+      "confirm MOCK_MODE env forces mock",
+      "confirm missing config.json in non-mock mode fails with a clear message, not a crash",
+      "confirm defaults match config.example.json"
+    ],
+    "passes": true
+  },
+  {
+    "id": 7,
+    "category": "functional",
+    "description": "Market-hours module computes phase (premarket/open/afterhours/closed/weekend) in the configured timezone",
+    "steps": [
+      "read src/marketHours.js",
+      "confirm it uses America/New_York",
+      "confirm weekend and after-4pm ET return closed/weekend",
+      "confirm 9:30-16:00 ET weekday returns open",
+      "confirm it exposes nextChangeAt"
+    ],
+    "passes": true
+  },
+  {
+    "id": 8,
+    "category": "functional",
+    "description": "Poller is market-hours aware: fast pollers only run when open, earnings/econ refresh on a slow timer, featured-symbol tools re-pick each cycle",
+    "steps": [
+      "read src/poller.js",
+      "confirm cadence matches SPEC table",
+      "confirm featuredSymbol is derived from top unusual-activity row with featuredTickers fallback",
+      "confirm closed state stops fast pollers but keeps last values"
+    ],
+    "passes": true
+  },
+  {
+    "id": 9,
+    "category": "functional",
+    "description": "Panels are stale-marked when their last successful fetch exceeds 2x their interval",
+    "steps": [
+      "inspect state slot logic",
+      "confirm stale flag is computed per panel",
+      "confirm error slot is a short string or null, never a raw upstream message"
+    ],
+    "passes": true
+  },
+  {
+    "id": 10,
+    "category": "functional",
+    "description": "Client shell loads /api/state on an interval and drives a panel registry without a build step",
+    "steps": [
+      "open the served page in mock mode",
+      "confirm public/index.html uses <script type=module>",
+      "confirm no bundler/build is required",
+      "confirm the client polls /api/state and updates panels",
+      "confirm no uncaught console errors"
+    ],
+    "passes": true
+  },
+  {
+    "id": 11,
+    "category": "functional",
+    "description": "Flow-tape hero renders unusual-activity rows with sentiment color, tier, premium, ticker, and streams/updates on new data",
+    "steps": [
+      "mock mode",
+      "confirm the hero shows multiple flow rows",
+      "confirm bullish=green bearish=red coloring",
+      "confirm premium and ticker are legible",
+      "confirm new rows animate in (respecting prefers-reduced-motion)"
+    ],
+    "passes": true
+  },
+  {
+    "id": 12,
+    "category": "functional",
+    "description": "Vitals header renders market_stats (put/call, sentiment, largest trade) and the live clock + market phase",
+    "steps": [
+      "mock mode",
+      "confirm header shows market stats",
+      "confirm a running clock",
+      "confirm the market phase label"
+    ],
+    "passes": true
+  },
+  {
+    "id": 13,
+    "category": "functional",
+    "description": "Sentiment gauge panel renders put/call ratios as a visual gauge",
+    "steps": [
+      "mock mode",
+      "confirm put_call_ratios panel renders a gauge/visual, not raw numbers only"
+    ],
+    "passes": true
+  },
+  {
+    "id": 14,
+    "category": "functional",
+    "description": "Gamma panel renders gex_overview bias (LONG/SHORT gamma) and market summary",
+    "steps": [
+      "mock mode",
+      "confirm gexOverview panel shows bias and interpretation"
+    ],
+    "passes": true
+  },
+  {
+    "id": 15,
+    "category": "functional",
+    "description": "Sector heatmap renders sector_flow as colored tiles",
+    "steps": [
+      "mock mode",
+      "confirm sectorFlow panel renders tiles colored by flow"
+    ],
+    "passes": true
+  },
+  {
+    "id": 16,
+    "category": "functional",
+    "description": "IV-rank premium-seller watch renders iv_rank for the featured symbol",
+    "steps": [
+      "mock mode",
+      "confirm ivRank panel renders rank/percentile with rich/cheap read"
+    ],
+    "passes": true
+  },
+  {
+    "id": 17,
+    "category": "functional",
+    "description": "Rotating feature card cycles screener/strategy/edge-xray/iv-rank on rotationSeconds",
+    "steps": [
+      "mock mode",
+      "confirm the main stage rotates between heavier panels",
+      "confirm rotation honors rotationSeconds"
+    ],
+    "passes": true
+  },
+  {
+    "id": 18,
+    "category": "functional",
+    "description": "Featured deep-dive renders gex_ticker/edge_xray/strategy_ideas for the derived featured symbol",
+    "steps": [
+      "mock mode",
+      "confirm deep-dive shows the featured symbol's data"
+    ],
+    "passes": true
+  },
+  {
+    "id": 19,
+    "category": "functional",
+    "description": "'What's coming' ribbon renders earnings_flow + economic_calendar",
+    "steps": [
+      "mock mode",
+      "confirm a bottom ribbon lists upcoming earnings and econ events"
+    ],
+    "passes": true
+  },
+  {
+    "id": 20,
+    "category": "functional",
+    "description": "Off-hours/closed state renders a graceful recap view instead of the live layout",
+    "steps": [
+      "simulate closed market (mock or forced phase)",
+      "confirm the UI shows a closed/recap state, not a broken live view"
+    ],
+    "passes": true
+  },
+  {
+    "id": 21,
+    "category": "functional",
+    "description": "Connection/error states: a failed panel shows an empty/error tile, stale panels dim, a disconnect shows a footer indicator",
+    "steps": [
+      "force a panel error in mock",
+      "confirm the tile degrades gracefully",
+      "confirm stale dimming",
+      "confirm footer connection indicator"
+    ],
+    "passes": true
+  },
+  {
+    "id": 22,
+    "category": "functional",
+    "description": "MOCK badge is visible when mockMode is true so screenshots are honestly labeled",
+    "steps": [
+      "boot mock",
+      "confirm a MOCK/DEMO badge shows in the footer or corner"
+    ],
+    "passes": true
+  },
+  {
+    "id": 23,
+    "category": "style",
+    "description": "Design tokens: all colors/spacing/type come from CSS custom properties in one tokens file; no raw hex scattered in panels",
+    "steps": [
+      "read public/styles/tokens.css",
+      "grep panels for raw hex colors",
+      "confirm panels reference var(--*) tokens"
+    ],
+    "passes": true
+  },
+  {
+    "id": 24,
+    "category": "style",
+    "description": "Premium dark glassmorphism aesthetic: deep navy bg, translucent blurred panels, hairline borders, tasteful HSL semantic colors (no raw red/green)",
+    "steps": [
+      "load the page",
+      "confirm dark bg with backdrop-filter blur panels",
+      "confirm semantic green/red are tasteful HSL not #f00/#0f0",
+      "confirm it reads well full-screen"
+    ],
+    "passes": true
+  },
+  {
+    "id": 25,
+    "category": "style",
+    "description": "Legible from 10 feet: large type, high contrast, glanceable color-first hierarchy",
+    "steps": [
+      "view full-screen",
+      "confirm hero/vitals type is large",
+      "confirm mood is conveyed by color before reading"
+    ],
+    "passes": true
+  },
+  {
+    "id": 26,
+    "category": "style",
+    "description": "Motion is restrained and honors prefers-reduced-motion",
+    "steps": [
+      "confirm tape animates but other panels crossfade calmly",
+      "set prefers-reduced-motion",
+      "confirm animations are reduced/disabled"
+    ],
+    "passes": true
+  },
+  {
+    "id": 27,
+    "category": "functional",
+    "description": "README documents Raspberry Pi kiosk setup (config, autostart, Chromium kiosk flags)",
+    "steps": [
+      "read td-daddyboard/README.md",
+      "confirm setup steps: copy config, npm install, start, Chromium --kiosk autostart"
+    ],
+    "passes": true
+  },
+  {
+    "id": 28,
+    "category": "functional",
+    "description": "Nothing outside td-daddyboard/ is modified",
+    "steps": [
+      "git status",
+      "confirm all new/changed files are under td-daddyboard/"
+    ],
+    "passes": true
+  }
+]

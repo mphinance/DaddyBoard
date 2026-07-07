@@ -1,0 +1,19 @@
+{
+  "name": "td-daddyboard",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DaddyBoard — an always-on TraderDaddy Pro wall display. A headless daemon reads your td_live_ API key from a local config file, polls the public TraderDaddy Pro MCP endpoint, and serves one full-screen dark dashboard for Chromium kiosk mode on a Raspberry Pi.",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/server.js",
+    "dev": "node --env-file-if-exists=.env --watch src/server.js",
+    "mock": "MOCK_MODE=true node --env-file-if-exists=.env src/server.js"
+  },
+  "engines": {
+    "node": ">=20.18"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

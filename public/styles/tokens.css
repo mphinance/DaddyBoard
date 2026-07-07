@@ -1,0 +1,133 @@
+/* ==========================================================================
+   DaddyBoard — Design Tokens
+   Single source of truth. All other CSS MUST use var(--*) — no raw hex.
+   ========================================================================== */
+
+:root {
+  /* --- Background layers --- */
+  --bg-base:          hsl(222 47% 6%);     /* deep navy near-black */
+  --bg-gradient-top:  hsl(224 50% 8%);
+  --bg-gradient-bot:  hsl(220 45% 4%);
+  --panel-fill:       hsla(220 40% 12% / 0.55);
+  --panel-fill-hover: hsla(220 40% 14% / 0.70);
+  --panel-hero-fill:  hsla(222 44% 10% / 0.65);
+  --panel-header-fill:hsla(224 50% 8% / 0.80);
+  --panel-ribbon-fill:hsla(218 38% 10% / 0.75);
+
+  /* --- Borders --- */
+  --border-hairline:  hsla(210 40% 60% / 0.12);
+  --border-accent:    hsla(210 80% 60% / 0.25);
+  --border-bull:      hsla(152 65% 45% / 0.35);
+  --border-bear:      hsla(3   70% 50% / 0.35);
+
+  /* --- Blur / glass --- */
+  --blur-panel:       blur(18px);
+  --blur-header:      blur(24px);
+
+  /* --- Radii --- */
+  --radius-sm:        6px;
+  --radius-md:        10px;
+  --radius-lg:        16px;
+  --radius-xl:        22px;
+  --radius-pill:      999px;
+
+  /* --- Shadows --- */
+  --shadow-panel:     0 4px 32px hsla(220 60% 4% / 0.55), 0 1px 0 var(--border-hairline) inset;
+  --shadow-hero:      0 8px 48px hsla(220 60% 4% / 0.70);
+  --shadow-card:      0 2px 16px hsla(220 60% 4% / 0.40);
+
+  /* --- Semantic colors (HSL, tasteful) --- */
+  --bull:             hsl(152 62% 46%);    /* green — bullish */
+  --bull-dim:         hsla(152 62% 46% / 0.15);
+  --bull-glow:        hsla(152 62% 46% / 0.25);
+  --bear:             hsl(3   68% 56%);    /* red — bearish */
+  --bear-dim:         hsla(3   68% 56% / 0.15);
+  --bear-glow:        hsla(3   68% 56% / 0.25);
+  --neutral:          hsl(210 20% 60%);    /* muted blue-grey */
+  --caution:          hsl(40  90% 56%);    /* amber — warning/neutral */
+  --caution-dim:      hsla(40  90% 56% / 0.15);
+  --accent:           hsl(214 88% 62%);    /* blue accent */
+  --accent-dim:       hsla(214 88% 62% / 0.15);
+  --accent-glow:      hsla(214 88% 62% / 0.20);
+
+  /* Tier colors (from fixtures tierColor values, also semantic tokens) */
+  --tier-legendary:   hsl(38  94% 56%);   /* #f59e0b-ish amber */
+  --tier-elite:       hsl(264 82% 65%);   /* #8b5cf6-ish purple */
+  --tier-notable:     hsl(214 88% 62%);   /* #3b82f6-ish blue */
+
+  /* --- Text tiers --- */
+  --text-primary:     hsl(210 25% 96%);
+  --text-secondary:   hsl(210 18% 72%);
+  --text-muted:       hsl(210 14% 50%);
+  --text-dim:         hsl(210 12% 36%);
+  --text-bull:        hsl(152 60% 54%);
+  --text-bear:        hsl(3   65% 62%);
+  --text-accent:      hsl(214 90% 70%);
+  --text-caution:     hsl(40  88% 62%);
+
+  /* --- Spacing scale (8px base) --- */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  20px;
+  --sp-6:  24px;
+  --sp-8:  32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+
+  /* --- Type scale (large — read from 10 feet) --- */
+  --font-family: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+  --font-mono:   'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  --text-xs:   0.75rem;   /* 12px */
+  --text-sm:   0.875rem;  /* 14px */
+  --text-base: 1rem;      /* 16px */
+  --text-md:   1.125rem;  /* 18px */
+  --text-lg:   1.25rem;   /* 20px */
+  --text-xl:   1.5rem;    /* 24px */
+  --text-2xl:  1.875rem;  /* 30px */
+  --text-3xl:  2.25rem;   /* 36px */
+  --text-4xl:  3rem;      /* 48px */
+  --text-5xl:  3.75rem;   /* 60px */
+  --text-hero: 4.5rem;    /* 72px — for the biggest ticker callouts */
+
+  --weight-normal:   400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+  --weight-black:    900;
+
+  --leading-tight:   1.1;
+  --leading-snug:    1.25;
+  --leading-normal:  1.5;
+
+  /* --- Transitions --- */
+  --transition-fast:   150ms ease;
+  --transition-base:   250ms ease;
+  --transition-slow:   400ms ease;
+  --transition-xslow:  600ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* --- Animation durations --- */
+  --anim-flash:    800ms;
+  --anim-slide:    500ms;
+  --anim-fade:     300ms;
+
+  /* --- Panel states --- */
+  --stale-opacity:    0.45;
+  --error-opacity:    0.55;
+}
+
+/* Reduced motion: disable all non-essential animation */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --anim-flash:  0ms;
+    --anim-slide:  0ms;
+    --anim-fade:   0ms;
+    --transition-fast:  0ms;
+    --transition-base:  0ms;
+    --transition-slow:  0ms;
+    --transition-xslow: 0ms;
+  }
+}

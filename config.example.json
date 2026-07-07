@@ -1,0 +1,11 @@
+{
+  "//": "Copy this file to config.json and fill in your own td_live_ API key. config.json is gitignored and never leaves this device.",
+  "apiKey": "td_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "baseUrl": "https://api.traderdaddy.pro",
+  "port": 4321,
+  "mockMode": false,
+  "featuredTickers": ["SPY", "QQQ", "NVDA"],
+  "screenerRotation": ["daily-cuts", "momentum", "csp-wheel", "volatility-squeeze"],
+  "rotationSeconds": 20,
+  "timezone": "America/New_York"
+}

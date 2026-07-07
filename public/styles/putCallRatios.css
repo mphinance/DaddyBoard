@@ -1,0 +1,159 @@
+/* ==========================================================================
+   DaddyBoard — putCallRatios panel (Sentiment Gauge)
+   ========================================================================== */
+
+/* ---- Wrapper ---- */
+.pcr-wrap {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5);
+  overflow: hidden;
+}
+
+/* ---- Gauge SVG container ---- */
+.pcr-gauge-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.pcr-gauge-svg {
+  width: 100%;
+  max-width: 260px;
+  height: auto;
+  overflow: visible;
+}
+
+/* ---- Center readout (overlaid on gauge) ---- */
+.pcr-center {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.pcr-ratio-val {
+  font-family: var(--font-mono);
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-black);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  transition: color var(--transition-base);
+}
+
+.pcr-ratio-val.is-bull  { color: var(--text-bull); }
+.pcr-ratio-val.is-bear  { color: var(--text-bear); }
+.pcr-ratio-val.is-caution { color: var(--text-caution); }
+
+.pcr-sentiment-label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 2px;
+  transition: color var(--transition-base);
+}
+
+.pcr-sentiment-label.is-bull    { color: var(--text-bull); }
+.pcr-sentiment-label.is-bear    { color: var(--text-bear); }
+.pcr-sentiment-label.is-caution { color: var(--text-caution); }
+
+/* ---- Volume bar ---- */
+.pcr-vol-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  flex: 0 0 auto;
+}
+
+.pcr-vol-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.pcr-vol-label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  width: 36px;
+  flex-shrink: 0;
+}
+
+.pcr-vol-label.calls { color: var(--text-bull); }
+.pcr-vol-label.puts  { color: var(--text-bear); }
+
+.pcr-vol-track {
+  flex: 1;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  background: hsla(220 40% 14% / 0.6);
+}
+
+.pcr-vol-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width var(--transition-slow);
+}
+
+.pcr-vol-fill.calls { background: var(--bull); }
+.pcr-vol-fill.puts  { background: var(--bear); }
+
+.pcr-vol-num {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  width: 62px;
+  text-align: right;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ---- Meta footer ---- */
+.pcr-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--sp-2);
+  border-top: 1px solid var(--border-hairline);
+  flex: 0 0 auto;
+}
+
+.pcr-ticker {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  color: var(--text-accent);
+}
+
+.pcr-expiry {
+  font-size: var(--text-xs);
+  color: var(--text-dim);
+}
+
+/* ---- Zone arc labels (rendered in SVG) ---- */
+.pcr-zone-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ---- Needle animation ---- */
+@keyframes pcr-needle-in {
+  from { transform-origin: 50% 100%; transform: rotate(-90deg); opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.pcr-needle {
+  transform-origin: 50% 100%;
+  transition: transform var(--transition-xslow);
+}

@@ -1,0 +1,204 @@
+/* ==========================================================================
+   DaddyBoard — earningsFlow (Bottom Ribbon: Earnings Ahead)
+   ========================================================================== */
+
+.ef-wrap {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  overflow: hidden;
+}
+
+/* ---- Ribbon label ---- */
+.ef-ribbon-label {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-shrink: 0;
+}
+
+.ef-label-text {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-dim);
+}
+
+/* ---- Horizontal items strip ---- */
+.ef-items {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.ef-items::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---- Separator ---- */
+.ef-sep {
+  width: 1px;
+  background: var(--border-hairline);
+  flex-shrink: 0;
+  align-self: stretch;
+  margin: var(--sp-1) 0;
+}
+
+/* ---- Individual earnings card ---- */
+.ef-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding: var(--sp-2) var(--sp-4);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  min-width: 110px;
+  flex-shrink: 0;
+  background: var(--panel-ribbon-fill);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  cursor: default;
+}
+
+.ef-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+/* ---- Card top row (ticker + timing) ---- */
+.ef-card-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.ef-ticker {
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-black);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em;
+}
+
+.ef-timing {
+  font-size: 9px;
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.ef-date {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.ef-move {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  color: var(--text-caution);
+}
+
+/* ---- Flow premium row ---- */
+.ef-flow-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.ef-flow-premium {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+}
+
+.ef-bull-pct {
+  font-size: 9px;
+  color: var(--text-secondary);
+}
+
+/* ---- Confidence dots ---- */
+.ef-confidence {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.ef-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border-hairline);
+  transition: background var(--transition-fast);
+}
+
+.ef-dot.is-lit {
+  background: var(--accent);
+}
+
+.ef-conf-label {
+  font-size: 9px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-left: var(--sp-1);
+}
+
+/* ---- Top flow chip row ---- */
+.ef-top-flow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-1);
+}
+
+.ef-flow-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px var(--sp-2);
+  border-radius: var(--radius-pill);
+  font-size: 9px;
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ef-flow-chip.is-call {
+  background: var(--bull-dim);
+  color: var(--text-bull);
+  border: 1px solid var(--border-bull);
+}
+
+.ef-flow-chip.is-put {
+  background: var(--bear-dim);
+  color: var(--text-bear);
+  border: 1px solid var(--border-bear);
+}
+
+.ef-flow-score {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+/* ---- Empty state ---- */
+.ef-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  color: var(--text-dim);
+  font-size: var(--text-sm);
+}

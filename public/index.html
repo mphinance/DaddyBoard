@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en" data-rotation="20">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>DaddyBoard — TraderDaddy Pro Wall Display</title>
+  <!-- Inline favicon (no extra request; kills the /favicon.ico 404) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1120'/%3E%3Cpath d='M6 20 L13 13 L18 17 L26 9' fill='none' stroke='%2334d399' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='26' cy='9' r='2.5' fill='%2334d399'/%3E%3C/svg%3E">
+
+  <!-- Design tokens (must be first) -->
+  <link rel="stylesheet" href="/styles/tokens.css">
+  <!-- Shell layout -->
+  <link rel="stylesheet" href="/styles/base.css">
+
+  <!-- Panel stylesheets -->
+  <link rel="stylesheet" href="/styles/marketStats.css">
+  <link rel="stylesheet" href="/styles/unusualActivity.css">
+  <link rel="stylesheet" href="/styles/gexOverview.css">
+  <link rel="stylesheet" href="/styles/sectorFlow.css">
+  <link rel="stylesheet" href="/styles/putCallRatios.css">
+  <link rel="stylesheet" href="/styles/earningsFlow.css">
+  <link rel="stylesheet" href="/styles/economicCalendar.css">
+  <link rel="stylesheet" href="/styles/screener.css">
+  <link rel="stylesheet" href="/styles/ivRank.css">
+  <link rel="stylesheet" href="/styles/strategyIdeas.css">
+  <link rel="stylesheet" href="/styles/edgeXray.css">
+  <link rel="stylesheet" href="/styles/gexTicker.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ============================================================
+         HEADER — vitals + clock + phase
+    ============================================================ -->
+    <header id="region-header">
+      <!-- marketStats panel mounts here -->
+      <div data-panel="marketStats" style="flex:1;display:flex;align-items:center;min-width:0;overflow:hidden;"></div>
+
+      <!-- Chrome: clock, phase, connection -->
+      <div style="display:flex;align-items:center;gap:16px;flex-shrink:0;">
+        <div class="market-closed-banner" id="closed-banner">
+          <span style="opacity:0.6;">&#9675;</span>
+          Market Closed — showing last session
+        </div>
+        <div class="footer-phase" id="header-phase">
+          <div class="phase-dot" id="header-phase-dot"></div>
+          <span id="header-phase-label">—</span>
+        </div>
+        <div class="footer-clock" id="header-clock">--:--:-- --</div>
+      </div>
+    </header>
+
+    <!-- ============================================================
+         HERO — unusual activity flow tape
+    ============================================================ -->
+    <section id="region-hero">
+      <div data-panel="unusualActivity" class="panel" style="height:100%;border-radius:inherit;"></div>
+    </section>
+
+    <!-- ============================================================
+         MIDDLE — 4-panel grid + rotating main stage
+    ============================================================ -->
+    <div id="region-middle">
+      <!-- Always-visible grid panels -->
+      <div id="region-grid">
+        <div data-panel="putCallRatios"  class="panel"></div>
+        <div data-panel="gexOverview"    class="panel"></div>
+        <div data-panel="sectorFlow"     class="panel"></div>
+        <div data-panel="ivRank"         class="panel"></div>
+      </div>
+
+      <!-- Rotating main-stage -->
+      <div id="region-stage">
+        <!-- Each stage slot; app.js crossfades between them -->
+        <div class="stage-slot panel" id="stage-screener">
+          <div data-panel="screener" style="height:100%;"></div>
+        </div>
+        <div class="stage-slot panel" id="stage-strategyIdeas">
+          <div data-panel="strategyIdeas" style="height:100%;"></div>
+        </div>
+        <div class="stage-slot panel" id="stage-edgeXray">
+          <div data-panel="edgeXray" style="height:100%;"></div>
+        </div>
+        <div class="stage-slot panel" id="stage-gexTicker">
+          <div data-panel="gexTicker" style="height:100%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         RIBBON — earnings + economic calendar
+    ============================================================ -->
+    <div id="region-ribbon">
+      <div data-panel="earningsFlow"     class="panel"></div>
+      <div data-panel="economicCalendar" class="panel"></div>
+    </div>
+
+    <!-- ============================================================
+         FOOTER — clock, phase, featured symbol, connection, mock
+    ============================================================ -->
+    <footer id="region-footer">
+      <div class="footer-clock mono" id="footer-clock">--:--:-- --</div>
+
+      <div class="footer-phase">
+        <div class="phase-dot" id="footer-phase-dot"></div>
+        <span id="footer-phase-label">Loading…</span>
+      </div>
+
+      <div class="footer-featured">
+        Focus: <strong id="footer-featured">—</strong>
+      </div>
+
+      <div style="flex:1;"></div>
+
+      <div class="footer-connection">
+        <div class="conn-dot" id="conn-dot"></div>
+        <span id="conn-label">connecting</span>
+      </div>
+
+      <div class="mock-badge" id="mock-badge">
+        <span>&#9679;</span> MOCK
+      </div>
+
+      <div class="dim" style="font-size:10px;letter-spacing:0.06em;opacity:0.5;">
+        DaddyBoard v0.1
+      </div>
+    </footer>
+
+  </div><!-- /#app -->
+
+  <!-- Panel modules (self-registering) — loaded after DOM -->
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
