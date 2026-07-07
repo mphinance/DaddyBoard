@@ -53,7 +53,7 @@ body::after {
   height: 100vh;
   grid-template-rows:
     56px          /* header  */
-    1fr           /* hero    */
+    1.5fr         /* hero — the showpiece, physically dominant */
     minmax(0, 1fr)/* middle  */
     72px          /* ribbon  */
     36px;         /* footer  */
@@ -109,11 +109,11 @@ body::after {
 }
 .brand-name span { color: var(--brand-gold); }
 .brand-sub {
-  font-size: 9px;
-  letter-spacing: 0.20em;
+  font-size: 10px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   font-weight: var(--weight-semibold);
-  color: var(--text-dim);
+  color: var(--text-muted);
   margin-top: 4px;
 }
 .brand-divider {

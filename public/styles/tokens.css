@@ -8,14 +8,14 @@
   --bg-base:          hsl(222 42% 7%);     /* #0a0e1a — TDPro base */
   --bg-gradient-top:  hsl(230 54% 12%);    /* #0d1230 — TDPro mid */
   --bg-gradient-bot:  hsl(230 52% 9%);     /* #0a0e27 — TDPro edge */
-  --panel-fill:       hsla(220 40% 12% / 0.55);
-  --panel-fill-hover: hsla(220 40% 14% / 0.70);
+  --panel-fill:       hsla(220 40% 12% / 0.66);
+  --panel-fill-hover: hsla(220 40% 14% / 0.76);
   --panel-hero-fill:  hsla(222 44% 10% / 0.65);
   --panel-header-fill:hsla(224 50% 8% / 0.80);
   --panel-ribbon-fill:hsla(218 38% 10% / 0.75);
 
   /* --- Borders --- */
-  --border-hairline:  hsla(210 40% 60% / 0.12);
+  --border-hairline:  hsla(210 40% 60% / 0.18);
   --border-accent:    hsla(38 92% 55% / 0.30);   /* TDPro gold */
   --border-bull:      hsla(152 65% 45% / 0.35);
   --border-bear:      hsla(3   70% 50% / 0.35);
@@ -59,12 +59,12 @@
   --glow-text-accent: 0 0 11px hsla(42  96% 62% / 0.55);
   --glow-text-soft:   0 0 10px hsla(210 60% 80% / 0.28);
 
-  /* --- Brand (TraderDaddy Pro) --- */
-  --brand-gold:       hsl(38  92% 52%);
-  --brand-gold-soft:  hsl(42  92% 64%);
+  /* --- Brand (TraderDaddy Pro) — ONE gold, used everywhere --- */
+  --brand-gold:       hsl(40  96% 56%);
+  --brand-gold-soft:  hsl(42  96% 66%);
 
   /* Tier colors (from fixtures tierColor values, also semantic tokens) */
-  --tier-legendary:   hsl(38  94% 56%);   /* #f59e0b-ish amber */
+  --tier-legendary:   hsl(40  96% 56%);   /* unified brand gold */
   --tier-elite:       hsl(264 82% 65%);   /* #8b5cf6-ish purple */
   --tier-notable:     hsl(214 88% 62%);   /* #3b82f6-ish blue */
 

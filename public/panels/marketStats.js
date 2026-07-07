@@ -77,27 +77,23 @@ register('marketStats', {
         <div class="ms-stat-label">Bear Premium</div>
         <div class="ms-stat-value bear">${fmt.currency(d.totalBearishPremium)}</div>
       </div>
-      <div class="ms-sep"></div>
-
-      <!-- Largest trade -->
-      ${lt.ticker ? `
-      <div class="ms-largest-trade">
-        <div class="ms-largest-ticker">${lt.ticker}</div>
-        <div>
-          <div class="ms-stat-label">Largest Trade · ${lt.tradeType ?? ''}</div>
-          <div class="ms-largest-meta">
-            <span class="ms-stat-value ${sentimentClass(lt.sentiment)}" style="font-size:var(--text-md);">${fmt.currency(lt.premium)}</span>
-            <span style="margin-left:6px;">${lt.type ?? ''} · Score ${lt.score ?? '—'}</span>
-          </div>
-        </div>
-      </div>
-      <div class="ms-sep"></div>` : ''}
 
       <!-- Active alerts -->
       ${d.activeAlerts > 0 ? `
       <div class="ms-alerts">
         <div class="ms-alerts-dot"></div>
         ${d.activeAlerts} Alert${d.activeAlerts !== 1 ? 's' : ''}
+      </div>` : ''}
+
+      <!-- Money moment — the single biggest trade on the tape, pinned right -->
+      ${lt.ticker ? `
+      <div class="ms-money ${sentimentClass(lt.sentiment)}">
+        <div class="ms-money-label">Largest Trade${lt.tradeType ? ' · ' + lt.tradeType : ''}</div>
+        <div class="ms-money-row">
+          <span class="ms-money-ticker">${lt.ticker}</span>
+          <span class="ms-money-premium ${sentimentClass(lt.sentiment)}">${fmt.currency(lt.premium)}</span>
+        </div>
+        <div class="ms-money-meta">${lt.type ?? ''}${lt.score != null ? ' · Score ' + lt.score : ''}</div>
       </div>` : ''}
     `;
   },

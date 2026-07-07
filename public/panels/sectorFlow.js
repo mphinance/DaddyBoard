@@ -48,8 +48,6 @@ function chgClass(chgPct) {
 
 function buildTile(sector, intensityCls) {
   const side     = (sector.flowNet ?? 0) >= 0 ? 'bull' : 'bear';
-  const chipCls  = sector.flowSide === 'puts' ? 'puts' : 'calls';
-  const chipTxt  = sector.flowSide === 'puts' ? 'PUTS' : 'CALLS';
   const chgCls   = chgClass(sector.chgPct);
   const sentPct  = Math.min(100, Math.max(0, sector.sentiment ?? 50));
   const cylCls   = sector.cylinders === 'bullish' ? ' cylinders-bull'
@@ -61,14 +59,9 @@ function buildTile(sector, intensityCls) {
     <div class="sf-tile ${intensityCls}${cylCls}">
       <div class="sf-tile-top">
         <span class="sf-sym">${sector.sym ?? '—'}</span>
-        <span class="sf-chip ${chipCls}">${chipTxt}</span>
+        ${chgTxt ? `<span class="sf-chg ${chgCls}">${chgTxt}</span>` : ''}
       </div>
-      <div class="sf-tile-bot">
-        <span class="sf-name">${sector.name ?? ''}</span>
-        <span class="sf-flow ${side}">${flowTxt}</span>
-      </div>
-      ${chgTxt ? `<div style="position:absolute;top:var(--sp-2);right:var(--sp-3);">
-        <span class="sf-chg ${chgCls}">${chgTxt}</span></div>` : ''}
+      <span class="sf-flow ${side}">${flowTxt}</span>
       <div class="sf-sent-bar">
         <div class="sf-sent-fill ${side}" style="width:${sentPct}%;"></div>
       </div>
@@ -107,6 +100,11 @@ register('sectorFlow', {
     // Pre-compute sorted abs flows for relative intensity bucketing
     const absFlows = sectors.map(s => Math.abs(s.flowNet ?? 0)).sort((a, b) => a - b);
 
+    // Wall-display legibility: show only the biggest movers as fewer, larger tiles
+    const topSectors = [...sectors]
+      .sort((a, b) => Math.abs(b.flowNet ?? 0) - Math.abs(a.flowNet ?? 0))
+      .slice(0, 6);
+
     const wrap = container.querySelector('#sf-inner');
     if (!wrap) return;
 
@@ -121,17 +119,16 @@ register('sectorFlow', {
         </div>
       </div>
 
-      <!-- Sector heatmap grid -->
+      <!-- Sector heatmap grid — top movers only -->
       <div class="sf-grid">
-        ${sectors.map(s => buildTile(s, intensityClass(s, absFlows))).join('')}
+        ${topSectors.map(s => buildTile(s, intensityClass(s, absFlows))).join('')}
       </div>
 
       <!-- Legend -->
       <div class="sf-legend">
         <div class="sf-legend-item"><div class="sf-legend-dot bull"></div><span>Calls leading</span></div>
         <div class="sf-legend-item"><div class="sf-legend-dot bear"></div><span>Puts leading</span></div>
-        <div class="sf-legend-item"><div class="sf-legend-dot neutral"></div><span>Mixed</span></div>
-        <span style="margin-left:auto;font-size:var(--text-xs);color:var(--text-dim);">bar = sentiment %</span>
+        <span style="margin-left:auto;font-size:var(--text-xs);color:var(--text-dim);">top 6 by flow</span>
       </div>`;
   },
 });

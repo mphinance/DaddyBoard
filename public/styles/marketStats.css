@@ -20,11 +20,11 @@
 }
 
 .ms-stat-label {
-  font-size: 9px;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.10em;
+  letter-spacing: 0.08em;
   font-weight: var(--weight-semibold);
-  color: var(--text-dim);
+  color: var(--text-muted);
   white-space: nowrap;
 }
 
@@ -64,23 +64,55 @@
 .ms-sentiment-pill.bear { background: var(--bear-dim);    color: var(--text-bear); border: 1px solid var(--border-bear); box-shadow: var(--glow-bear); }
 .ms-sentiment-pill.neutral { background: var(--accent-dim); color: var(--text-accent); border: 1px solid var(--border-accent); box-shadow: var(--glow-accent); }
 
-.ms-largest-ticker { text-shadow: var(--glow-text-soft); }
-
-.ms-largest-trade {
+/* ---- Money moment (largest trade) — gold-framed right anchor ---- */
+.ms-money {
+  margin-left: auto;
   display: flex;
-  align-items: center;
-  gap: var(--sp-2);
+  flex-direction: column;
+  gap: 1px;
   flex-shrink: 0;
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-accent);
+  background: var(--accent-dim);
+  box-shadow: var(--glow-accent);
 }
 
-.ms-largest-ticker {
+.ms-money-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: var(--weight-bold);
+  color: var(--text-accent);
+  white-space: nowrap;
+}
+
+.ms-money-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+}
+
+.ms-money-ticker {
   font-family: var(--font-mono);
   font-size: var(--text-xl);
   font-weight: var(--weight-black);
   color: var(--text-primary);
+  text-shadow: var(--glow-text-soft);
+  letter-spacing: -0.02em;
 }
 
-.ms-largest-meta {
+.ms-money-premium {
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  white-space: nowrap;
+}
+.ms-money-premium.bull { color: var(--text-bull); text-shadow: var(--glow-text-bull); }
+.ms-money-premium.bear { color: var(--text-bear); text-shadow: var(--glow-text-bear); }
+.ms-money-premium.neutral { color: var(--text-accent); text-shadow: var(--glow-text-accent); }
+
+.ms-money-meta {
   font-size: var(--text-xs);
   color: var(--text-muted);
   white-space: nowrap;
