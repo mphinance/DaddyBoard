@@ -6,7 +6,7 @@
   <meta name="color-scheme" content="dark">
   <title>DaddyBoard — TraderDaddy Pro Wall Display</title>
   <!-- Inline favicon (no extra request; kills the /favicon.ico 404) -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1120'/%3E%3Cpath d='M6 20 L13 13 L18 17 L26 9' fill='none' stroke='%2334d399' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='26' cy='9' r='2.5' fill='%2334d399'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0e1a'/%3E%3Cpath d='M6 20 L13 13 L18 17 L26 9' fill='none' stroke='%23f59e0b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='26' cy='9' r='2.5' fill='%23f59e0b'/%3E%3C/svg%3E">
 
   <!-- Design tokens (must be first) -->
   <link rel="stylesheet" href="/styles/tokens.css">
@@ -34,6 +34,22 @@
          HEADER — vitals + clock + phase
     ============================================================ -->
     <header id="region-header">
+      <!-- Brand lockup — anchors the bar, ties to TraderDaddy Pro -->
+      <div class="brand-lockup">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 21 L13 13 L18 17 L27 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="27" cy="7" r="2.6" fill="currentColor"/>
+            <path d="M5 26 H27" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-name">DADDY<span>BOARD</span></div>
+          <div class="brand-sub">TraderDaddy&nbsp;Pro</div>
+        </div>
+      </div>
+      <div class="brand-divider"></div>
+
       <!-- marketStats panel mounts here -->
       <div data-panel="marketStats" style="flex:1;display:flex;align-items:center;min-width:0;overflow:hidden;"></div>
 

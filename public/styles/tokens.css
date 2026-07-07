@@ -4,10 +4,10 @@
    ========================================================================== */
 
 :root {
-  /* --- Background layers --- */
-  --bg-base:          hsl(222 47% 6%);     /* deep navy near-black */
-  --bg-gradient-top:  hsl(224 50% 8%);
-  --bg-gradient-bot:  hsl(220 45% 4%);
+  /* --- Background layers (match TraderDaddy Pro blue-navy) --- */
+  --bg-base:          hsl(222 42% 7%);     /* #0a0e1a — TDPro base */
+  --bg-gradient-top:  hsl(230 54% 12%);    /* #0d1230 — TDPro mid */
+  --bg-gradient-bot:  hsl(230 52% 9%);     /* #0a0e27 — TDPro edge */
   --panel-fill:       hsla(220 40% 12% / 0.55);
   --panel-fill-hover: hsla(220 40% 14% / 0.70);
   --panel-hero-fill:  hsla(222 44% 10% / 0.65);
@@ -16,7 +16,7 @@
 
   /* --- Borders --- */
   --border-hairline:  hsla(210 40% 60% / 0.12);
-  --border-accent:    hsla(210 80% 60% / 0.25);
+  --border-accent:    hsla(38 92% 55% / 0.30);   /* TDPro gold */
   --border-bull:      hsla(152 65% 45% / 0.35);
   --border-bear:      hsla(3   70% 50% / 0.35);
 
@@ -46,9 +46,13 @@
   --neutral:          hsl(210 20% 60%);    /* muted blue-grey */
   --caution:          hsl(40  90% 56%);    /* amber — warning/neutral */
   --caution-dim:      hsla(40  90% 56% / 0.15);
-  --accent:           hsl(214 88% 62%);    /* blue accent */
-  --accent-dim:       hsla(214 88% 62% / 0.15);
-  --accent-glow:      hsla(214 88% 62% / 0.20);
+  --accent:           hsl(38  92% 52%);    /* #f59e0b — TraderDaddy Pro gold */
+  --accent-dim:       hsla(38  92% 52% / 0.15);
+  --accent-glow:      hsla(38  92% 52% / 0.22);
+
+  /* --- Brand (TraderDaddy Pro) --- */
+  --brand-gold:       hsl(38  92% 52%);
+  --brand-gold-soft:  hsl(42  92% 64%);
 
   /* Tier colors (from fixtures tierColor values, also semantic tokens) */
   --tier-legendary:   hsl(38  94% 56%);   /* #f59e0b-ish amber */
@@ -62,7 +66,7 @@
   --text-dim:         hsl(210 12% 36%);
   --text-bull:        hsl(152 60% 54%);
   --text-bear:        hsl(3   65% 62%);
-  --text-accent:      hsl(214 90% 70%);
+  --text-accent:      hsl(40  90% 64%);
   --text-caution:     hsl(40  88% 62%);
 
   /* --- Spacing scale (8px base) --- */

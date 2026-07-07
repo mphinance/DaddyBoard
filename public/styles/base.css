@@ -19,27 +19,23 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Deep gradient background */
+/* TraderDaddy Pro background: blue dot-grid + top glow over blue-navy */
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: -1;
   background:
-    radial-gradient(ellipse 120% 60% at 20% 0%, hsla(224 60% 14% / 0.8) 0%, transparent 60%),
-    radial-gradient(ellipse 80% 50% at 80% 100%, hsla(264 50% 10% / 0.5) 0%, transparent 55%),
-    linear-gradient(160deg, var(--bg-gradient-top) 0%, var(--bg-base) 50%, var(--bg-gradient-bot) 100%);
+    radial-gradient(circle, hsla(214 90% 60% / 0.07) 1px, transparent 1px),
+    radial-gradient(ellipse 110% 45% at 50% 0%, hsla(214 90% 58% / 0.10) 0%, transparent 65%),
+    linear-gradient(160deg, var(--bg-gradient-top) 0%, var(--bg-base) 45%, var(--bg-gradient-bot) 100%);
+  background-size: 28px 28px, 100% 100%, 100% 100%;
 }
 
-/* Subtle scanline texture */
+/* Soft corner vignette for depth (subtle, premium) */
 body::after {
   content: '';
   position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background-image: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    hsla(220 50% 10% / 0.04) 2px,
-    hsla(220 50% 10% / 0.04) 4px
-  );
+  background: radial-gradient(ellipse 90% 70% at 50% 45%,
+    transparent 55%, hsla(230 55% 4% / 0.45) 100%);
 }
 
 /* ---- Layout grid ---- */
@@ -83,8 +79,47 @@ body::after {
   backdrop-filter: var(--blur-header);
   -webkit-backdrop-filter: var(--blur-header);
   border: 1px solid var(--border-hairline);
+  border-top: 2px solid var(--border-accent);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-panel);
+  box-shadow: var(--shadow-panel), 0 -1px 0 var(--accent-glow) inset;
+}
+
+/* ---- Brand lockup (header anchor) ---- */
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-shrink: 0;
+}
+.brand-mark {
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--accent-dim), hsla(38 92% 52% / 0.04));
+  border: 1px solid var(--border-accent);
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+.brand-mark svg { width: 22px; height: 22px; display: block; color: var(--brand-gold); }
+.brand-text { display: flex; flex-direction: column; line-height: 1; }
+.brand-name {
+  font-size: var(--text-md);
+  font-weight: var(--weight-black);
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+}
+.brand-name span { color: var(--brand-gold); }
+.brand-sub {
+  font-size: 9px;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  font-weight: var(--weight-semibold);
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+.brand-divider {
+  width: 1px; height: 30px;
+  background: var(--border-hairline);
+  flex-shrink: 0;
 }
 
 /* ---- Hero ---- */
