@@ -116,10 +116,68 @@ calendar occasionally. It respects the per-key rate limit and backs off on 429.
 
 ---
 
-## Raspberry Pi kiosk setup
+## Putting it on the wall
 
-Turn a Pi + monitor into a permanent wall display. Tested shape (Raspberry Pi OS,
-Chromium):
+DaddyBoard is just a small Node daemon that serves one full-screen page, so any
+device that can run Node **or** point a browser at another device on your LAN can
+be the display. Pick the path that matches your hardware.
+
+| You have… | Use | Effort |
+|---|---|---|
+| A Raspberry Pi you want dedicated to *only* this | **A. FullPageOS** | Lowest — flash & go |
+| A Raspberry Pi running normal Raspberry Pi OS | **B. Raspberry Pi OS + Chromium kiosk** | Medium — a service + autostart |
+| An old Android phone/tablet | **C. Termux** | Medium — no PC needed |
+| Any spare laptop / mini-PC / smart TV browser | **D. Just a browser** | Trivial |
+
+The daemon and the display don't have to be the same box. A common setup: run the
+daemon **once** on any always-on machine (a Pi, a NAS, a mini-PC), then point as
+many wall screens as you like at `http://<that-box-ip>:4321`.
+
+---
+
+### A. FullPageOS (the "OS that's just a browser")
+
+[**FullPageOS**](https://github.com/guysoft/FullPageOS) is a Raspberry Pi image
+that boots straight into a full-screen Chromium showing **one URL** — no desktop,
+no login, nothing to configure on-screen. It's the least-fuss wall display. It's
+built on Raspberry Pi OS, so you can run the DaddyBoard daemon on the same Pi.
+
+**1. Flash it.** Download the latest FullPageOS image (or use the *Raspberry Pi
+Imager* → "Other specific-purpose OS"), flash to an SD card, and before ejecting,
+edit two files on the `boot` partition:
+
+- `fullpageos.txt` → set the single line to `http://localhost:4321`
+- (Wi-Fi/SSH) enable SSH and set your network via *Imager*'s settings, or the
+  usual `wpa_supplicant.conf` / `ssh` files.
+
+**2. First boot, then SSH in and install the daemon:**
+```bash
+sudo apt update && sudo apt install -y nodejs npm git
+git clone https://github.com/mphinance/DaddyBoard.git ~/DaddyBoard
+cd ~/DaddyBoard && npm install
+cp config.example.json config.json     # add your td_live_ key
+```
+
+**3. Keep the daemon running on boot** (same service as method B below):
+```bash
+mkdir -p ~/.config/systemd/user
+# paste the daddyboard.service unit from method B, then:
+systemctl --user enable --now daddyboard.service
+loginctl enable-linger "$USER"
+```
+
+Reboot. FullPageOS brings up Chromium full-screen on `localhost:4321` and the
+daemon feeds it. Done.
+
+> Prefer not to install Node on the FullPageOS Pi? Run the daemon on **any other
+> box** on your LAN and set `fullpageos.txt` to `http://<that-box-ip>:4321`
+> instead. FullPageOS becomes a pure dumb screen.
+
+---
+
+### B. Raspberry Pi OS + Chromium kiosk
+
+If your Pi already runs the normal Raspberry Pi OS desktop, turn it into a kiosk.
 
 **1. Install Node 20+ and the app**
 ```bash
@@ -162,6 +220,44 @@ stop the screen blanking. Reboot and the wall lights up on its own.
 
 > Tip: to auto-sleep the panel outside market hours, add a cron job that runs
 > `xset dpms force off` in the evening and `xset dpms force on` at ~9:00 ET.
+
+---
+
+### C. Termux (turn an old Android phone/tablet into the wall)
+
+No Pi required — an old Android device makes a fine small wall display, and it
+runs the whole thing itself. Install [Termux](https://f-droid.org/packages/com.termux/)
+(from **F-Droid**, not the outdated Play Store build):
+
+```bash
+pkg update && pkg install nodejs git
+git clone https://github.com/mphinance/DaddyBoard.git
+cd DaddyBoard && npm install
+cp config.example.json config.json     # add your td_live_ key with e.g. `nano`
+npm start
+```
+
+Then open **http://localhost:4321** in the device's browser. Express and Node run
+fine on Android/ARM — DaddyBoard's only dependency is Express, all plain JS.
+
+For a true always-on kiosk:
+- **Full-screen browser:** use a kiosk browser app like *Fully Kiosk Browser*, or
+  Chrome's "Add to Home screen" → open the PWA-style full-screen shortcut.
+- **Autostart the daemon:** install the *Termux:Boot* addon (F-Droid) and drop a
+  script in `~/.termux/boot/` that `cd`s into the repo and runs `npm start`.
+- **Keep the screen on:** in Android Developer Options, enable *Stay awake while
+  charging*, and leave it on the charger.
+
+> Same trick as everywhere else: you can instead run the daemon on a PC/Pi and
+> just point the tablet's browser at `http://<that-box-ip>:4321`.
+
+---
+
+### D. Just a browser
+
+Any spare laptop, mini-PC, Mac mini, or a smart TV with a decent browser works.
+Run `npm start` on any always-on machine, then browse to `http://<ip>:4321` from
+the display and press **F11** for full screen. That's the entire setup.
 
 ---
 
