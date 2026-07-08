@@ -21,8 +21,15 @@ function interpClass(interp) {
   return 'neutral';
 }
 
-function actionLabel(interp) {
-  if (interp === 'rich')  return { icon: '↓', text: 'Favor selling — CSPs, credit spreads, covered calls' };
+function actionLabel(interp, earningsInWindow) {
+  if (interp === 'rich') {
+    if (earningsInWindow === true) {
+      // "Elevated IV" is already carried by the RICH + EARNINGS pills above —
+      // lead straight with the safety instruction so it fits two lines uncut.
+      return { icon: '↓', text: `Don't sell naked into the earnings print.` };
+    }
+    return { icon: '↓', text: 'Favor selling — CSPs, credit spreads, covered calls' };
+  }
   if (interp === 'cheap') return { icon: '↑', text: 'Favor buying — long calls/puts, debit spreads' };
   return { icon: '↔', text: 'No edge to buyers or sellers — size positions carefully' };
 }
@@ -51,10 +58,30 @@ function buildContent(d, sym) {
   const rank  = d.ivRank ?? 0;
   const pct   = d.ivPercentile ?? rank;
   const cls   = interpClass(d.interpretation);
-  const action = actionLabel(d.interpretation);
+  const earningsInWindow = d.earningsInWindow === true;
+  const action = actionLabel(d.interpretation, d.earningsInWindow);
   const iv    = d.currentIV != null ? `${(d.currentIV * 100).toFixed(1)}%` : '—';
   const ivMin = d.ivMin52w  != null ? `${(d.ivMin52w  * 100).toFixed(1)}%` : '—';
   const ivMax = d.ivMax52w  != null ? `${(d.ivMax52w  * 100).toFixed(1)}%` : '—';
+
+  // Rank-vs-percentile divergence caption (fires only on a real gap)
+  const divergence = Math.abs(pct - rank) >= 15
+    ? `Rank ${fmt.score(rank)} vs Pct ${fmt.score(pct)} — read the divergence.`
+    : '';
+
+  const gated = d.interpretation === 'rich' && earningsInWindow;
+
+  // Amber earnings chip — sits inline in the header beside the interp pill when
+  // premium-sell advice is gated (absolute-positioning it collided with the pill).
+  const earningsChip = gated
+    ? `<span class="ivr-earnings-chip">EARNINGS ⚠</span>`
+    : '';
+
+  // When gated, the raw note ("favor selling strategies…") contradicts the
+  // action line's earnings caveat — and any note here is redundant with the
+  // action line directly below. Drop it so the note becomes a flex spacer that
+  // pins the (safety-critical) action line without the panel overflowing.
+  const noteText = gated ? '' : (d.note ?? '');
 
   // Gauge position clamped 0-100
   const gaugeLeft = Math.max(0, Math.min(100, rank));
@@ -64,7 +91,10 @@ function buildContent(d, sym) {
 
       <div class="ivr-header">
         <div class="ivr-symbol">${sym}</div>
-        <span class="ivr-interp-pill ${cls}">${d.interpretation ?? 'neutral'}</span>
+        <div class="ivr-header-pills">
+          ${earningsChip}
+          <span class="ivr-interp-pill ${cls}">${d.interpretation ?? 'neutral'}</span>
+        </div>
       </div>
 
       <div class="ivr-dial-row">
@@ -108,7 +138,7 @@ function buildContent(d, sym) {
         </div>
       </div>
 
-      <div class="ivr-note">${d.note ?? ''}</div>
+      <div class="ivr-note">${noteText}${divergence ? ` <span class="ivr-divergence">${divergence}</span>` : ''}</div>
 
       <div class="ivr-action ${cls}">
         <div class="ivr-action-icon">${action.icon}</div>

@@ -63,83 +63,21 @@
   color: var(--text-bull);
 }
 
-/* ---- Heatmap grid — fewer, bigger tiles (no scroll on a wall) ---- */
-.sf-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+/* ---- Sorted magnitude bars ---- */
+.sf-bars {
+  display: flex;
+  flex-direction: column;
   gap: var(--sp-3);
   flex: 1;
   min-height: 0;
   overflow: hidden;
 }
 
-/* ---- Individual sector tile ---- */
-.sf-tile {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: var(--sp-3) var(--sp-4);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-hairline);
-  cursor: default;
-  min-height: 0;
-  position: relative;
-  overflow: hidden;
-  transition: border-color var(--transition-fast), transform var(--transition-fast);
-}
-
-.sf-tile:hover {
-  border-color: var(--border-accent);
-  transform: translateY(-1px);
-}
-
-/* Color intensity classes — bull side (3 tiers) */
-.sf-tile.bull-3 {
-  background: hsla(152 62% 46% / 0.22);
-  border-color: hsla(152 65% 45% / 0.50);
-}
-.sf-tile.bull-2 {
-  background: hsla(152 62% 46% / 0.13);
-  border-color: hsla(152 65% 45% / 0.30);
-}
-.sf-tile.bull-1 {
-  background: hsla(152 62% 46% / 0.07);
-  border-color: var(--border-hairline);
-}
-
-/* Color intensity classes — bear side (3 tiers) */
-.sf-tile.bear-3 {
-  background: hsla(3 68% 56% / 0.22);
-  border-color: hsla(3 70% 50% / 0.50);
-}
-.sf-tile.bear-2 {
-  background: hsla(3 68% 56% / 0.13);
-  border-color: hsla(3 70% 50% / 0.30);
-}
-.sf-tile.bear-1 {
-  background: hsla(3 68% 56% / 0.07);
-  border-color: var(--border-hairline);
-}
-
-/* Neutral */
-.sf-tile.neutral {
-  background: hsla(220 40% 14% / 0.40);
-}
-
-/* "All cylinders firing" glow pulse */
-.sf-tile.cylinders-bull {
-  box-shadow: 0 0 12px hsla(152 62% 46% / 0.25);
-}
-.sf-tile.cylinders-bear {
-  box-shadow: 0 0 12px hsla(3 68% 56% / 0.25);
-}
-
-/* ---- Tile top row: sym + flow side chip ---- */
-.sf-tile-top {
+.sf-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-1);
+  gap: var(--sp-3);
+  min-height: 0;
 }
 
 .sf-sym {
@@ -149,41 +87,64 @@
   color: var(--text-primary);
   letter-spacing: -0.02em;
   text-shadow: var(--glow-text-soft);
+  width: 3.2em;
+  flex-shrink: 0;
 }
 
+/* Bar lane: all bars grow from a shared left baseline (magnitudes) */
+.sf-bar-lane {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+  display: flex;
+  align-items: center;
+}
+
+/* Faint sparkline trace behind the bar */
+.sf-spark {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 24px;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* The magnitude bar — length carries the flow, color carries side only */
+.sf-bar {
+  height: 14px;
+  border-radius: var(--radius-pill);
+  transition: width var(--transition-slow);
+  flex-shrink: 0;
+}
+
+.sf-bar.bull { background: var(--bull); box-shadow: var(--glow-bull); }
+.sf-bar.bear { background: var(--bear); box-shadow: var(--glow-bear); }
+
+/* Flow value — its own fixed column so bar length stays pure magnitude */
 .sf-flow {
   font-family: var(--font-mono);
-  font-size: var(--text-lg);
+  font-size: var(--text-md);
   font-weight: var(--weight-bold);
   white-space: nowrap;
+  color: var(--text-secondary);
+  width: 5em;
   flex-shrink: 0;
+  text-align: right;
 }
 
 .sf-flow.bull { color: var(--text-bull); text-shadow: var(--glow-text-bull); }
 .sf-flow.bear { color: var(--text-bear); text-shadow: var(--glow-text-bear); }
 
-/* ---- Sentiment mini-bar (bottom of tile) ---- */
-.sf-sent-bar {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 4px;
-  background: hsla(220 40% 14% / 0.5);
-}
-
-.sf-sent-fill {
-  height: 100%;
-  transition: width var(--transition-slow);
-}
-
-.sf-sent-fill.bull { background: var(--bull); }
-.sf-sent-fill.bear { background: var(--bear); }
-
-/* ---- chgPct badge on tile ---- */
+/* ---- chgPct badge ---- */
 .sf-chg {
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
   font-family: var(--font-mono);
   font-weight: var(--weight-bold);
   flex-shrink: 0;
+  width: 4.5em;
+  text-align: right;
 }
 
 .sf-chg.up   { color: var(--text-bull); }
@@ -217,4 +178,11 @@
 
 .sf-legend-dot.bull { background: var(--bull); }
 .sf-legend-dot.bear { background: var(--bear); }
-.sf-legend-dot.neutral { background: var(--neutral); }
+
+.sf-legend-note {
+  margin-left: auto;
+  font-size: var(--text-xs);
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+}

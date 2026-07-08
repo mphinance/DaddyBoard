@@ -9,6 +9,7 @@
   --bg-gradient-top:  hsl(230 54% 12%);    /* #0d1230 — TDPro mid */
   --bg-gradient-bot:  hsl(230 52% 9%);     /* #0a0e27 — TDPro edge */
   --panel-fill:       hsla(220 40% 12% / 0.66);
+  --panel-fill-quiet: hsla(220 40% 11% / 0.50);   /* secondary-tier grid panels — recede */
   --panel-fill-hover: hsla(220 40% 14% / 0.76);
   --panel-hero-fill:  hsla(222 44% 10% / 0.65);
   --panel-header-fill:hsla(224 50% 8% / 0.80);
@@ -44,6 +45,7 @@
   --bear-dim:         hsla(2   90% 62% / 0.16);
   --bear-glow:        hsla(2   90% 62% / 0.40);
   --neutral:          hsl(210 20% 60%);    /* muted blue-grey */
+  --neutral-dim:      hsla(210 22% 58% / 0.16); /* calm 'normal' zone fill (P/C neutral band) */
   --caution:          hsl(42  96% 56%);    /* amber — warning/neutral */
   --caution-dim:      hsla(42  96% 56% / 0.16);
   --accent:           hsl(40  96% 56%);    /* neon gold — TraderDaddy Pro */
@@ -63,10 +65,12 @@
   --brand-gold:       hsl(40  96% 56%);
   --brand-gold-soft:  hsl(42  96% 66%);
 
-  /* Tier colors (from fixtures tierColor values, also semantic tokens) */
-  --tier-legendary:   hsl(40  96% 56%);   /* unified brand gold */
-  --tier-elite:       hsl(264 82% 65%);   /* #8b5cf6-ish purple */
-  --tier-notable:     hsl(214 88% 62%);   /* #3b82f6-ish blue */
+  /* Tier ramp — rank is encoded by WEIGHT, not a second color language.
+     Hue stays reserved for direction (green/red). Legendary keeps brand gold;
+     elite/notable step down through the neutral text ramp. */
+  --tier-legendary:   hsl(40  96% 56%);   /* brand gold — top tier only */
+  --tier-elite:       hsl(210 18% 72%);   /* = --text-secondary */
+  --tier-notable:     hsl(210 14% 50%);   /* = --text-muted */
 
   /* --- Text tiers --- */
   --text-primary:     hsl(210 25% 96%);
@@ -115,6 +119,10 @@
   --leading-tight:   1.1;
   --leading-snug:    1.25;
   --leading-normal:  1.5;
+
+  /* --- Letter-spacing (exactly two roles for uppercase micro-labels) --- */
+  --track-label:      0.08em;
+  --track-label-wide: 0.16em;
 
   /* --- Transitions --- */
   --transition-fast:   150ms ease;

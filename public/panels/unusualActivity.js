@@ -33,9 +33,12 @@ function tierStyle(row) {
   return { color: 'var(--text-muted)', label: short };
 }
 
-function isBull(row) {
-  return (row.sentiment ?? '').toLowerCase() === 'bullish' ||
-         (row.type ?? '') === 'CALL';
+function sideOf(row) {
+  if (row.flowIntent === 'hedge') return 'neutral';
+  const s = (row.sentiment ?? '').toLowerCase();
+  if (s === 'bullish') return 'bull';
+  if (s === 'bearish') return 'bear';
+  return 'neutral';
 }
 
 function buildAggStrip(agg) {
@@ -86,12 +89,16 @@ function buildAggStrip(agg) {
 }
 
 function buildRow(row, isNew) {
-  const bull = isBull(row);
+  const side = sideOf(row);
+  const isHedge = row.flowIntent === 'hedge';
   const tier = tierStyle(row);
   const newClass = isNew ? ' is-new' : '';
-  const sideClass = bull ? ' is-bull' : ' is-bear';
-  const badgeClass = bull ? 'bull' : 'bear';
+  const sideClass = ` is-${side}`;
+  const badgeClass = side; // 'bull' | 'bear' | 'neutral'
   const contractLabel = (row.type ?? 'CALL') + (row.tradeType ? ` <span class="ua-trade-chip">${row.tradeType}</span>` : '');
+  const sideBadge = isHedge
+    ? `<span class="ua-hedge-chip">HEDGE</span>`
+    : `<span class="ua-type-badge ${badgeClass}">${contractLabel}</span>`;
   const repeatBadge = row.isRepeatFlow
     ? `<span class="ua-repeat">&#8635;${row.repeatCount > 1 ? ` x${row.repeatCount}` : ''}</span>` : '';
   // vsOI can be huge on live data (e.g. 16300x) — compact so it stays in-column.
@@ -105,13 +112,13 @@ function buildRow(row, isNew) {
     <div class="ua-row${sideClass}${newClass}" data-id="${row.id ?? ''}">
       <div class="ua-ticker">${row.ticker ?? '—'}</div>
       <div>
-        <span class="ua-type-badge ${badgeClass}">${contractLabel}</span>
+        ${sideBadge}
         ${repeatBadge}
       </div>
       <div class="ua-premium">${fmt.currency(row.premium)}</div>
       <div class="ua-score">
         <div class="ua-score-num" style="color:${tier.color};">${row.score ?? '—'}</div>
-        <div class="ua-tier-label" style="color:${tier.color};opacity:0.8;">${tier.label}</div>
+        <div class="ua-tier-label" style="color:${tier.color};">${tier.label}</div>
       </div>
       <div class="ua-vsoi">${vsOIStr}</div>
       <div class="ua-desc" title="${(row.flowDescription ?? '').replace(/"/g, '&quot;')}">${row.flowDescription ?? ''}</div>

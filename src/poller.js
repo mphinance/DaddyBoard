@@ -116,9 +116,17 @@ const INTERVALS_MS = {
 };
 
 function refreshStaleFlags() {
+  // When the market is closed we deliberately stop the fast pollers, so the
+  // last-fetched values are the *freshest data that exists* — last session,
+  // not stale. Staleness only means "we expected a refresh and didn't get one,"
+  // which can only happen while the market is open. The board sits closed
+  // ~17.5h/day plus weekends — its main glance window — so we must not paint
+  // every panel STALE for the majority of its life.
+  const marketOpen = getMarketPhase().isOpen;
   const now = Date.now();
   for (const [name, panel] of Object.entries(state.panels)) {
     if (!panel.fetchedAt) continue;
+    if (!marketOpen) { state.panels[name].stale = false; continue; }
     const age = now - new Date(panel.fetchedAt).getTime();
     const threshold = (INTERVALS_MS[name] ?? 120_000) * 2;
     state.panels[name].stale = age > threshold;

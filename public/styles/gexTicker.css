@@ -22,6 +22,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--sp-2);
+  min-width: 0;
 }
 
 .gt-symbol {
@@ -52,6 +53,7 @@
   flex-direction: column;
   align-items: flex-end;
   gap: var(--sp-1);
+  flex-shrink: 0;
 }
 
 .gt-flip-label {
@@ -71,6 +73,22 @@
   text-shadow: var(--glow-text-accent);
   line-height: 0.95;
   letter-spacing: -0.03em;
+}
+
+/* Distance triplet — SPOT / FLIP / signed gap. Its own full-width row under the
+   header so the wide nowrap line never fights the hero flip number for width.
+   Color set inline by sign. */
+.gt-dist {
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: var(--leading-snug);
+  flex-shrink: 0;
 }
 
 /* ---- Takeaway line (verb-led, not a caption) ---- */
@@ -143,14 +161,33 @@
   overflow: hidden;
 }
 
-.gt-cols {
+/* Centered zero-axis profile: bars grow up/down from the vertical middle,
+   flip + spot vertical lines overlay so the gap between them IS the distance. */
+.gt-profile {
+  position: relative;
   height: 100%;
+  width: 100%;
+}
+
+/* The zero axis runs across the vertical MIDDLE of the plot. */
+.gt-zero-axis {
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  height: 1px;
+  background: var(--border-hairline);
+  z-index: 1;
+}
+
+.gt-cols {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: stretch;
   gap: var(--sp-2);
+  z-index: 2;
 }
 
-/* Each strike is a vertical column: net-GEX bar grows from a center baseline */
+/* Each strike is a column; the strike label sits below the plot. */
 .gt-col {
   flex: 1 1 0;
   min-width: 0;
@@ -168,18 +205,9 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  border-bottom: 1px solid var(--border-hairline);
 }
 
-/* center baseline */
-.gt-col-plot::before {
-  content: '';
-  position: absolute;
-  left: 0; right: 0; top: 50%;
-  height: 1px;
-  background: var(--border-hairline);
-}
-
+/* Bars anchor to the 50% center axis: positive up, negative down. */
 .gt-col-bar {
   position: absolute;
   left: 18%;
@@ -190,16 +218,51 @@
 .gt-col-bar.is-pos { bottom: 50%; background: var(--bull); box-shadow: var(--glow-bull); }
 .gt-col-bar.is-neg { top: 50%;    background: var(--bear); box-shadow: var(--glow-bear); }
 
-/* the strike nearest spot gets a gold outline so the eye lands on it */
-.gt-col.is-spot .gt-col-plot { background: hsla(40 96% 56% / 0.06); }
-.gt-col.is-spot .gt-col-strike { color: var(--text-accent); text-shadow: var(--glow-text-soft); }
-
 .gt-col-strike {
   font-family: var(--font-mono);
   font-size: var(--text-base);
   font-weight: var(--weight-bold);
-  color: var(--text-secondary);
+  color: var(--text-muted);
   white-space: nowrap;
   flex-shrink: 0;
+  min-height: 1.2em;
 }
-.gt-col-strike.is-above { color: var(--text-primary); }
+.gt-col-strike.is-hidden { visibility: hidden; }
+
+/* ---- Overlaid vertical reference lines (flip = hero gold, spot = dashed) ---- */
+.gt-vline {
+  position: absolute;
+  top: 0; bottom: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.gt-vline-label {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+  white-space: nowrap;
+}
+
+/* FLIP — bold gold vertical, the hero reference tying header to chart. */
+.gt-vline-flip {
+  border-left: 2px solid var(--accent);
+  box-shadow: var(--glow-accent);
+}
+.gt-vline-flip .gt-vline-label {
+  color: var(--text-accent);
+  text-shadow: var(--glow-text-accent);
+}
+
+/* SPOT — thinner dashed neutral line. */
+.gt-vline-spot {
+  border-left: 1px dashed var(--text-secondary);
+}
+.gt-vline-spot .gt-vline-label {
+  color: var(--text-secondary);
+}

@@ -109,11 +109,12 @@
   overflow-y: auto;
 }
 
+/* Number-led: symbol, GEX total, LONG/SHORT, then the flip·spot chip (full width). */
 .gex-index-row {
   display: grid;
-  grid-template-columns: 48px 1fr 88px 56px;
+  grid-template-columns: 40px 1fr auto auto;
   align-items: center;
-  gap: var(--sp-3);
+  gap: var(--sp-2);
   padding: var(--sp-2) var(--sp-3);
   border-radius: var(--radius-sm);
   background: hsla(220 40% 12% / 0.35);
@@ -133,47 +134,22 @@
   letter-spacing: -0.02em;
 }
 
-/* Net-GEX bar */
-.gex-bar-wrap {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-2);
-  min-width: 0;
-}
-
-.gex-bar-track {
-  flex: 1;
-  height: 6px;
-  border-radius: var(--radius-pill);
-  background: hsla(220 40% 14% / 0.6);
-  overflow: hidden;
-  position: relative;
-}
-
-.gex-bar-fill {
-  position: absolute;
-  top: 0; bottom: 0;
-  border-radius: var(--radius-pill);
-  transition: width var(--transition-slow), left var(--transition-slow);
-}
-
-.gex-bar-fill.long  { background: var(--bull); left: 50%; }
-.gex-bar-fill.short { background: var(--bear); right: 50%; }
-
+/* GEX total now leads the row — legibility floor is --text-secondary / 18px. */
 .gex-index-gex {
   font-family: var(--font-mono);
-  font-size: var(--text-xs);
+  font-size: var(--text-md);
+  font-weight: var(--weight-bold);
   color: var(--text-secondary);
-  text-align: right;
+  text-align: left;
   white-space: nowrap;
 }
 
 .gex-index-bias {
-  font-size: 9px;
+  font-size: var(--text-sm);
   font-weight: var(--weight-bold);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  text-align: right;
+  letter-spacing: var(--track-label);
+  text-align: left;
   white-space: nowrap;
 }
 
@@ -183,15 +159,29 @@
 
 /* ---- Flip point chip ---- */
 .gex-flip-chip {
+  justify-self: end;
   display: inline-flex;
   align-items: center;
   gap: var(--sp-1);
   font-size: var(--text-xs);
   color: var(--text-caution);
   font-family: var(--font-mono);
-  padding: 2px var(--sp-2);
+  white-space: nowrap;
+  padding: 2px var(--sp-1);
   border-radius: var(--radius-pill);
   background: var(--caution-dim);
   border: 1px solid hsla(40 90% 56% / 0.30);
   white-space: nowrap;
+}
+
+/* Above-flip is the calm side (don't scream green); below-flip earns red. */
+.gex-flip-chip.is-above {
+  color: var(--text-secondary);
+  background: hsla(220 40% 14% / 0.6);
+  border-color: var(--border-hairline);
+}
+.gex-flip-chip.is-below {
+  color: var(--text-bear);
+  background: var(--bear-dim);
+  border-color: var(--border-bear);
 }

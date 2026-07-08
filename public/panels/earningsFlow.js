@@ -64,7 +64,8 @@ register('earningsFlow', {
     if (applySlotState(container, slot)) return;
     if (!slot?.data) { renderEmpty(container.querySelector('#ef-items') ?? container, 'No earnings data'); return; }
 
-    const items = (slot.data.earnings ?? []).slice(0, 5);
+    // Tertiary "what's coming" strip — the NEXT 2-3 names only.
+    const items = (slot.data.earnings ?? []).slice(0, 3);
     const itemsEl = container.querySelector('#ef-items');
     if (!itemsEl) return;
 
@@ -84,7 +85,10 @@ register('earningsFlow', {
       // Flow premium total across flows array
       const flowPremium = (item.flows ?? []).reduce((s, f) => s + (f.premium ?? 0), 0);
       const topFlow     = (item.flows ?? []).sort((a, b) => (b.unusualScore ?? 0) - (a.unusualScore ?? 0))[0];
-      const bullPct     = ev.preEarningsBullishPct != null ? `${ev.preEarningsBullishPct}% bull` : null;
+      // Non-color redundancy: directional lean carries a ▲/▼ glyph prefix.
+      const bullPct     = ev.preEarningsBullishPct != null
+        ? `${ev.preEarningsBullishPct >= 50 ? '▲' : '▼'} ${ev.preEarningsBullishPct}% bull`
+        : null;
 
       // Date display
       const dateStr = ev.earningsDate

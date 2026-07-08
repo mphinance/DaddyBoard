@@ -53,26 +53,27 @@ function biasIcon(variant) {
  * Build a net-GEX bar that shows how far long or short a symbol sits.
  * maxGex is the reference scale (use the largest netGex in the set).
  */
-function buildIndexRow(sym, entry, maxGex) {
+function buildIndexRow(sym, entry) {
   if (!entry) return '';
-  const variant  = biasVariant(entry.bias);
-  const pct = maxGex > 0 ? Math.min(100, Math.abs(entry.netGex ?? 0) / maxGex * 50) : 0;
-  const barCls = variant === 'long' ? 'long' : variant === 'short' ? 'short' : 'long';
+  const variant = biasVariant(entry.bias);
+
+  // Number-led (no diverging bar in this small grid panel — the real net-GEX
+  // profile lives in the stage gexTicker). Spot-vs-flip gate: the chip is just
+  // the flip price; its color carries which side of flip spot sits (above =
+  // calm/neutral, below = red). The signed gap in full lives on the gexTicker
+  // stage — this narrow secondary row can't afford it without clipping.
+  const hasDist    = entry.spot != null && entry.flipPoint != null;
+  const signedDist = hasDist ? entry.spot - entry.flipPoint : null;
   const flipChip = entry.flipPoint != null
-    ? `<span class="gex-flip-chip">flip ${fmt.number(entry.flipPoint)}</span>`
+    ? `<span class="gex-flip-chip ${hasDist ? (signedDist >= 0 ? 'is-above' : 'is-below') : ''}">flip ${fmt.number(entry.flipPoint)}</span>`
     : '';
 
   return `
     <div class="gex-index-row">
       <div class="gex-index-sym">${sym}</div>
-      <div class="gex-bar-wrap">
-        <div class="gex-bar-track">
-          <div class="gex-bar-fill ${barCls}" style="width:${pct.toFixed(1)}%;"></div>
-        </div>
-        ${flipChip}
-      </div>
       <div class="gex-index-gex">${fmt.currency(entry.totalGEX)}</div>
       <div class="gex-index-bias ${variant}">${biasShort(entry.bias)}</div>
+      ${flipChip}
     </div>`;
 }
 
@@ -106,8 +107,6 @@ register('gexOverview', {
       .filter(k => d[k] != null)
       .map(k => ({ sym: k, entry: d[k] }));
 
-    const maxGex = entries.reduce((m, { entry }) => Math.max(m, Math.abs(entry.netGex ?? 0)), 1);
-
     const wrap = container.querySelector('#gex-inner');
     if (!wrap) return;
 
@@ -132,7 +131,7 @@ register('gexOverview', {
 
       <!-- Per-index strip -->
       <div class="gex-index-strip">
-        ${entries.map(({ sym, entry }) => buildIndexRow(sym, entry, maxGex)).join('')}
+        ${entries.map(({ sym, entry }) => buildIndexRow(sym, entry)).join('')}
       </div>`;
   },
 });

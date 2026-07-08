@@ -51,6 +51,10 @@ body::after {
   display: grid;
   width: 100vw;
   height: 100vh;
+  /* Single column, floored at 0. Without an explicit column the grid uses an
+     implicit `auto` track that grows to its widest child's min-content — a
+     panel's nowrap content then pushes the whole board past the viewport. */
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows:
     56px          /* header  */
     1.5fr         /* hero — the showpiece, physically dominant */
@@ -63,8 +67,8 @@ body::after {
     "middle"
     "ribbon"
     "footer";
-  gap: var(--sp-2);
-  padding: var(--sp-2);
+  gap: var(--sp-3);          /* two-tier rhythm: more air BETWEEN major regions */
+  padding: var(--sp-3);
   overflow: hidden;
 }
 
@@ -97,7 +101,9 @@ body::after {
   border-radius: var(--radius-md);
   background: linear-gradient(135deg, var(--accent-dim), hsla(38 92% 52% / 0.04));
   border: 1px solid var(--border-accent);
-  box-shadow: 0 0 16px var(--accent-glow);
+  /* Static gold glyph runs 24/7 on a wall panel — keep the glow faint to
+     avoid OLED/LCD burn-in of the bright brand mark. */
+  box-shadow: 0 0 6px hsla(40 96% 56% / 0.18);
 }
 .brand-mark svg { width: 22px; height: 22px; display: block; color: var(--brand-gold); }
 .brand-text { display: flex; flex-direction: column; line-height: 1; }
@@ -133,7 +139,16 @@ body::after {
 #region-middle {
   grid-area: middle;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 2fr;
+  /* minmax(0, …) floors — bare `fr` tracks keep an implicit min-content minimum,
+     so a panel's nowrap content (stats row, distance triplet) would force its
+     track wider than its share and push the whole row past the viewport. The 0
+     floor lets tracks shrink to their fr share and rely on each panel's own
+     overflow:hidden. Matches the row-track guard on #app. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2fr);
+  /* Floor the single row too — otherwise the implicit `auto` row grows to the
+     tallest panel's content and spills the whole middle band past its height
+     into the ribbon below. */
+  grid-template-rows: minmax(0, 1fr);
   gap: var(--sp-2);
   overflow: hidden;
 }
@@ -142,7 +157,11 @@ body::after {
 #region-grid {
   grid-column: 1 / 5;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* Floor the row at 0 so a panel's content can't force it taller than the
+     middle region and spill past the bottom into the ribbon. Panels clip their
+     own overflow. */
+  grid-template-rows: minmax(0, 1fr);
   gap: var(--sp-2);
 }
 
@@ -180,6 +199,11 @@ body::after {
   color: var(--text-muted);
 }
 
+/* ---- Secondary tier: the 4 always-on grid panels recede below hero/stage ---- */
+#region-grid > .panel {
+  background: var(--panel-fill-quiet);
+}
+
 /* ---- Glass panel base ---- */
 .panel {
   background: var(--panel-fill);
@@ -205,11 +229,11 @@ body::after {
 }
 
 .panel-title {
-  font-size: var(--text-xs);
+  font-size: var(--text-md);              /* 18px — wayfinding must read at 10 ft */
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-muted);
+  letter-spacing: var(--track-label);
+  color: var(--text-secondary);
 }
 
 .panel-body {
@@ -262,7 +286,7 @@ body::after {
   height: 100%;
   flex-direction: column;
   gap: var(--sp-3);
-  color: var(--text-dim);
+  color: var(--text-secondary);
   font-size: var(--text-sm);
 }
 
@@ -301,8 +325,9 @@ body.market-closed #app::before {
     hsla(220 50% 6% / 0.4) 0%, transparent 70%);
 }
 
-body.market-closed .panel { opacity: 0.75; }
-body.market-closed #region-hero { opacity: 0.80; }
+/* Off-hours: DO NOT dim. The board is "closed" the majority of the day/weekend —
+   that's exactly when the walk-past glance matters. Keep full contrast; the
+   closed banner + phase chrome communicate the state. */
 
 .market-closed-banner {
   display: none;
@@ -321,23 +346,23 @@ body.market-closed #region-hero { opacity: 0.80; }
 
 body.market-closed .market-closed-banner { display: flex; }
 
-/* ---- Footer elements ---- */
-.footer-clock {
+/* ---- Header clock + phase (the one canonical set on the wall) ---- */
+.header-clock {
   font-family: var(--font-mono);
-  font-size: var(--text-sm);
+  font-size: var(--text-lg);
   font-weight: var(--weight-medium);
-  color: var(--text-secondary);
+  color: var(--text-primary);
   letter-spacing: 0.05em;
 }
 
-.footer-phase {
+.header-phase {
   display: flex;
   align-items: center;
   gap: var(--sp-2);
   font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--track-label);
 }
 
 .phase-dot {
@@ -383,22 +408,32 @@ body.market-closed .market-closed-banner { display: flex; }
 .conn-dot.is-disconnected { background: var(--bear); }
 body.is-disconnected .conn-dot { background: var(--bear); }
 
-/* ---- MOCK badge ---- */
+/* ---- MOCK badge ----
+   Demo data must never be mistaken for the tape. Pin it as a loud corner
+   ribbon in the top-right of the wall, above all panels — legible at 10ft. */
 .mock-badge {
   display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 100;
   align-items: center;
-  gap: var(--sp-1);
-  padding: 2px var(--sp-2);
-  background: hsla(40 90% 56% / 0.15);
-  border: 1px solid hsla(40 90% 56% / 0.30);
-  border-radius: var(--radius-pill);
-  font-size: 10px;
-  font-weight: var(--weight-bold);
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-5);
+  background: var(--caution);
+  border: none;
+  border-bottom-left-radius: var(--radius-md);
+  font-size: var(--text-md);
+  font-weight: var(--weight-black);
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--caution);
+  letter-spacing: var(--track-label-wide);
+  color: hsl(222 42% 7%);
+  box-shadow: 0 2px 16px hsla(40 96% 56% / 0.35);
 }
 .mock-badge.is-visible { display: flex; }
+
+/* Reserve header space so the fixed MOCK ribbon never covers the clock/phase */
+body.has-mock-badge #region-header { padding-right: 168px; }
 
 /* ---- Utility classes ---- */
 .bull  { color: var(--text-bull); }

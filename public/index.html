@@ -59,11 +59,11 @@
           <span style="opacity:0.6;">&#9675;</span>
           Market Closed — showing last session
         </div>
-        <div class="footer-phase" id="header-phase">
+        <div class="header-phase" id="header-phase">
           <div class="phase-dot" id="header-phase-dot"></div>
           <span id="header-phase-label">—</span>
         </div>
-        <div class="footer-clock" id="header-clock">--:--:-- --</div>
+        <div class="header-clock mono" id="header-clock">--:--:-- --</div>
       </div>
     </header>
 
@@ -113,16 +113,10 @@
     </div>
 
     <!-- ============================================================
-         FOOTER — clock, phase, featured symbol, connection, mock
+         FOOTER — featured symbol + connection
+         (Clock + phase live in the header — one canonical set on the wall.)
     ============================================================ -->
     <footer id="region-footer">
-      <div class="footer-clock mono" id="footer-clock">--:--:-- --</div>
-
-      <div class="footer-phase">
-        <div class="phase-dot" id="footer-phase-dot"></div>
-        <span id="footer-phase-label">Loading…</span>
-      </div>
-
       <div class="footer-featured">
         Focus: <strong id="footer-featured">—</strong>
       </div>
@@ -133,17 +127,14 @@
         <div class="conn-dot" id="conn-dot"></div>
         <span id="conn-label">connecting</span>
       </div>
-
-      <div class="mock-badge" id="mock-badge">
-        <span>&#9679;</span> MOCK
-      </div>
-
-      <div class="dim" style="font-size:10px;letter-spacing:0.06em;opacity:0.5;">
-        DaddyBoard v0.1
-      </div>
     </footer>
 
   </div><!-- /#app -->
+
+  <!-- Demo-data ribbon — top-level overlay so it sits above the whole wall -->
+  <div class="mock-badge" id="mock-badge">
+    <span>&#9679;</span> MOCK DATA
+  </div>
 
   <!-- Panel modules (self-registering) — loaded after DOM -->
   <script type="module" src="/app.js"></script>

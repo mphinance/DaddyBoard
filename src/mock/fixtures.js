@@ -14,29 +14,24 @@ const NOW = () => new Date().toISOString();
 // ---------------------------------------------------------------------------
 // get_market_stats
 // ---------------------------------------------------------------------------
+// Byte-identical to the live wire shape: this legacy tool is snake_case and
+// carries no overall sentiment index / bull-bear ratio / alert count. The panel
+// derives an overall read from the three index sentiments.
 export const get_market_stats = {
+  spy_put_call_ratio: 0.78,
+  qqq_put_call_ratio: 0.65,
+  iwm_put_call_ratio: 1.12,
+  spy_sentiment: 'Bullish',
+  qqq_sentiment: 'Bullish',
+  iwm_sentiment: 'Bearish',
+  largest_trade_premium: 3_840_000,
+  largest_trade_symbol: 'NVDA260710C00185000',
+  largest_trade_strike: 185,
+  largest_trade_expiry: '07/10/26',
+  largest_trade_type: 'CALL',
   tradingDate: '2026-07-07',
-  marketOpen: true,
   timestamp: NOW(),
-  putCallRatioSPY: 0.78,
-  putCallRatioQQQ: 0.65,
-  putCallRatioIWM: 1.12,
-  overallSentiment: 'Bullish',
-  sentimentScore: 72,
-  dominantFlow: 'calls',
-  totalFlowPremium: 4_820_000,
-  largestTrade: {
-    ticker: 'NVDA',
-    type: 'CALL',
-    premium: 3_840_000,
-    sentiment: 'Bullish',
-    tradeType: 'sweep',
-    score: 94,
-  },
-  totalBullishPremium: 31_200_000,
-  totalBearishPremium: 12_400_000,
-  bullishBearishRatio: 2.52,
-  activeAlerts: 7,
+  marketOpen: true,
 };
 
 // ---------------------------------------------------------------------------
@@ -64,7 +59,7 @@ const UA_ROWS = [
     flowDescription: 'Sizable put block — large hedge or directional short bet ahead of FOMC',
     tier: 'ELITE', tierColor: '#8b5cf6', tierDescription: 'Top 10% unusual flow',
     repeatCount: 1, clusterId: null, convictionLevel: 'high',
-    isRepeatFlow: false, sentimentAction: 'bought puts', sentimentLabel: 'Bearish Conviction',
+    isRepeatFlow: false, sentimentAction: 'bought puts', sentimentLabel: 'Hedge', flowIntent: 'hedge',
     sentimentDescription: 'Put block bought on ask — downside protection or directional bet',
     sentimentExplanation: 'PUT bought on ask at market close time suggests macro hedge',
     isDivergentFlow: false, moneynessPct: -1.8, moneynessBucket: 'OTM',
@@ -129,7 +124,7 @@ const UA_ROWS = [
     flowDescription: 'Macro hedge — large put block to protect tech exposure',
     tier: 'NOTABLE', tierColor: '#3b82f6', tierDescription: 'Top 20% unusual flow',
     repeatCount: 1, clusterId: null, convictionLevel: 'medium',
-    isRepeatFlow: false, sentimentAction: 'bought puts', sentimentLabel: 'Bearish Hedge',
+    isRepeatFlow: false, sentimentAction: 'bought puts', sentimentLabel: 'Hedge', flowIntent: 'hedge',
     sentimentDescription: 'Put block in QQQ suggests portfolio protection, not panic',
     sentimentExplanation: 'PUT block bought at mid — typical hedging behavior',
     isDivergentFlow: false, moneynessPct: -2.1, moneynessBucket: 'OTM',
@@ -181,7 +176,7 @@ const UA_ROWS = [
     flowDescription: 'Energy put sweep — oil demand uncertainty, China growth fears',
     tier: 'NOTABLE', tierColor: '#3b82f6', tierDescription: 'Top 20% unusual flow',
     repeatCount: 1, clusterId: null, convictionLevel: 'medium',
-    isRepeatFlow: false, sentimentAction: 'bought puts', sentimentLabel: 'Bearish',
+    isRepeatFlow: false, sentimentAction: 'bought puts', sentimentLabel: 'Bearish', flowIntent: 'directional',
     sentimentDescription: 'Put sweep signals near-term downside bet in energy',
     sentimentExplanation: 'PUT bought on ask — directional short, not portfolio hedge',
     isDivergentFlow: false, moneynessPct: -1.5, moneynessBucket: 'OTM',
@@ -235,7 +230,7 @@ function makeGexSymbol(sym, totalGex, bias) {
     isAboveSpot: strike >= 499,
   }));
   return { symbol: sym, totalGEX: totalGex, callGex: totalGex * 0.62, putGex: totalGex * -0.38,
-    netGex: totalGex, flipPoint: 487, bias, byStrike };
+    netGex: totalGex, flipPoint: 487, spot: 499, bias, byStrike };
 }
 
 export const get_gex_overview = {
@@ -255,16 +250,17 @@ export const get_gex_overview = {
 export function get_gex_ticker(args) {
   const sym = (args?.symbol ?? 'NVDA').toUpperCase();
   const base = sym === 'NVDA' ? 1.2e9 : 0.8e9;
+  const spot = sym === 'NVDA' ? 128.45 : 125;
   const byStrike = [100, 110, 120, 130, 140].map((strike, i) => ({
     strike, callGex: base * (0.3 + i * 0.1), putGex: -base * (0.25 - i * 0.04),
     netGex: base * (0.05 + i * 0.06), callOi: 5000 + i * 400, putOi: 4000 + (4-i)*350,
     callGamma: 0.012 + i * 0.003, putGamma: 0.011 - i * 0.002,
-    distanceFromSpot: parseFloat(((strike - 125) / 125 * 100).toFixed(2)),
-    isAboveSpot: strike >= 125,
+    distanceFromSpot: parseFloat(((strike - spot) / spot * 100).toFixed(2)),
+    isAboveSpot: strike >= spot,
   }));
   return {
     symbol: sym, totalGEX: base * 1.4, callGex: base * 0.9, putGex: -base * 0.5,
-    netGex: base * 1.4, flipPoint: 118, bias: 'LONG_GAMMA', byStrike,
+    netGex: base * 1.4, flipPoint: 118, spot, bias: 'LONG_GAMMA', byStrike,
     proxy: sym === 'QQQ' ? { symbol: 'NQ', scaleFactor: 0.24 } : null,
   };
 }
@@ -322,6 +318,7 @@ export const get_sector_flow = {
 export const get_put_call_ratios = {
   ticker: 'SPY',
   putCallRatio: 0.78,
+  putCallRatioAvg20d: 0.88,
   expirationDate: '2026-07-11',
   putVolume: 124_800,
   callVolume: 160_000,
@@ -456,8 +453,10 @@ export function get_iv_rank(args) {
   const sym = (args?.symbol ?? 'NVDA').toUpperCase();
   const rankMap = { NVDA: 72, SPY: 34, QQQ: 38, TSLA: 81, AAPL: 28, META: 55, AMD: 67 };
   const rank = rankMap[sym] ?? 50;
+  const earningsSet = new Set(['NVDA', 'TSLA', 'AMZN']);
   return {
     symbol: sym, ivRank: rank, ivPercentile: rank + 5,
+    earningsInWindow: earningsSet.has(sym),
     currentIV: parseFloat((0.35 + rank / 200).toFixed(3)),
     ivMin52w: 0.24, ivMax52w: 0.82,
     interpretation: rank > 60 ? 'rich' : rank < 30 ? 'cheap' : 'neutral',

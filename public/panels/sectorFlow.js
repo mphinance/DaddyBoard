@@ -1,15 +1,16 @@
 /**
  * DaddyBoard — sectorFlow panel
  *
- * Renders a sector heatmap: one colored tile per sector whose background
- * intensity encodes call (bull) or put (bear) flow magnitude.  Above the
- * grid, a macro ribbon shows the risk-on/off read.  A sentiment mini-bar
- * runs across the bottom of each tile.
+ * Renders sorted horizontal bars — one per sector, ranked by |flowNet| desc.
+ * Bar length = |flowNet| / maxAbsFlow, so a +$4.2M sector is physically ~10× a
+ * +$420K one (true magnitude encoding — the pre-attentive "where's the money"
+ * read).  Color is side-only (bull / bear); a faint 20-pt sparkline trace sits
+ * behind each bar.  Above the bars, a macro ribbon shows the risk-on/off read.
  *
  * Data path: slot.data = get_sector_flow payload
  * Fields used:
  *   macro: { label, description, riskOnScore, dominantSector, dominantFlow }
- *   sectors[]: { sym, name, flowNet, chgPct, flowSide, sentiment, cylinders }
+ *   sectors[]: { sym, name, flowNet, chgPct, sparkline }
  */
 
 import { register, fmt, applySlotState, renderEmpty } from '../app.js';
@@ -18,53 +19,59 @@ import { register, fmt, applySlotState, renderEmpty } from '../app.js';
 // Helpers
 // ---------------------------------------------------------------------------
 
-/**
- * Map flowNet magnitude to a tile intensity class.
- * We use the distribution of flowNet values within the current dataset
- * to pick relative tiers, so no hard-coded dollar amounts.
- *   top third  → tier 3 (strong color)
- *   mid third  → tier 2 (medium)
- *   bot third  → tier 1 (faint)
- */
-function intensityClass(sector, sortedAbsFlows) {
-  const abs = Math.abs(sector.flowNet ?? 0);
-  const n   = sortedAbsFlows.length;
-  if (n === 0) return 'neutral';
-  const rank = sortedAbsFlows.indexOf(abs); // position in asc-sorted array
-  const pct  = rank / (n - 1 || 1);
-  const side = (sector.flowNet ?? 0) >= 0 ? 'bull' : 'bear';
-  if (pct >= 0.66) return `${side}-3`;
-  if (pct >= 0.33) return `${side}-2`;
-  if (pct > 0)     return `${side}-1`;
-  return 'neutral';
-}
-
 function chgClass(chgPct) {
+  // Widened flat band so +0.06% and +1.82% don't share the same "up" energy.
   if (chgPct == null) return 'flat';
-  if (chgPct > 0.05)  return 'up';
-  if (chgPct < -0.05) return 'down';
+  if (chgPct > 0.25)  return 'up';
+  if (chgPct < -0.25) return 'down';
   return 'flat';
 }
 
-function buildTile(sector, intensityCls) {
-  const side     = (sector.flowNet ?? 0) >= 0 ? 'bull' : 'bear';
-  const chgCls   = chgClass(sector.chgPct);
-  const sentPct  = Math.min(100, Math.max(0, sector.sentiment ?? 50));
-  const cylCls   = sector.cylinders === 'bullish' ? ' cylinders-bull'
-    : sector.cylinders === 'bearish' ? ' cylinders-bear' : '';
-  const flowTxt  = fmt.currency(sector.flowNet);
-  const chgTxt   = sector.chgPct != null ? `${sector.chgPct >= 0 ? '+' : ''}${sector.chgPct.toFixed(2)}%` : '';
+/**
+ * Render a 20-pt sparkline array as a faint SVG polyline trace.
+ * viewBox is normalized 0..100 x, 0..24 y; series is min-max scaled to fit.
+ */
+function buildSparkline(series) {
+  if (!Array.isArray(series) || series.length < 2) return '';
+  const n   = series.length;
+  const min = Math.min(...series);
+  const max = Math.max(...series);
+  const span = max - min || 1;
+  const pts = series.map((v, i) => {
+    const x = (i / (n - 1)) * 100;
+    const y = 22 - ((v - min) / span) * 20; // 2px top/bottom padding
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  return `
+    <svg class="sf-spark" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="${pts}" fill="none" stroke="var(--text-muted)"
+                stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+    </svg>`;
+}
+
+/**
+ * Build one sorted magnitude bar.
+ * lenPct = |flowNet| / maxAbsFlow → all bars grow from a shared left baseline.
+ * Color = side only (2-state). Label carries a +/- prefix for color redundancy.
+ */
+function buildBar(sector, maxAbsFlow) {
+  const flow    = sector.flowNet ?? 0;
+  const side    = flow >= 0 ? 'bull' : 'bear';
+  const lenPct  = maxAbsFlow > 0 ? Math.min(100, (Math.abs(flow) / maxAbsFlow) * 100) : 0;
+  const chgCls  = chgClass(sector.chgPct);
+  const sign    = flow >= 0 ? '+' : '-';
+  const flowTxt = `${sign}${fmt.currency(Math.abs(flow))}`;
+  const chgTxt  = sector.chgPct != null ? fmt.pct(sector.chgPct, 2) : '';
 
   return `
-    <div class="sf-tile ${intensityCls}${cylCls}">
-      <div class="sf-tile-top">
-        <span class="sf-sym">${sector.sym ?? '—'}</span>
-        ${chgTxt ? `<span class="sf-chg ${chgCls}">${chgTxt}</span>` : ''}
+    <div class="sf-row">
+      <span class="sf-sym">${sector.sym ?? '—'}</span>
+      <div class="sf-bar-lane">
+        ${buildSparkline(sector.sparkline)}
+        <div class="sf-bar ${side}" style="width:${lenPct}%;"></div>
       </div>
       <span class="sf-flow ${side}">${flowTxt}</span>
-      <div class="sf-sent-bar">
-        <div class="sf-sent-fill ${side}" style="width:${sentPct}%;"></div>
-      </div>
+      ${chgTxt ? `<span class="sf-chg ${chgCls}">${chgTxt}</span>` : ''}
     </div>`;
 }
 
@@ -97,13 +104,13 @@ register('sectorFlow', {
       return;
     }
 
-    // Pre-compute sorted abs flows for relative intensity bucketing
-    const absFlows = sectors.map(s => Math.abs(s.flowNet ?? 0)).sort((a, b) => a - b);
-
-    // Wall-display legibility: show only the biggest movers as fewer, larger tiles
+    // Wall-display legibility: top movers only, sorted by |flowNet| desc.
     const topSectors = [...sectors]
       .sort((a, b) => Math.abs(b.flowNet ?? 0) - Math.abs(a.flowNet ?? 0))
       .slice(0, 6);
+
+    // Length domain: 0 → max(|flowNet|) across the shown set.
+    const maxAbsFlow = Math.max(...topSectors.map(s => Math.abs(s.flowNet ?? 0)), 0);
 
     const wrap = container.querySelector('#sf-inner');
     if (!wrap) return;
@@ -119,16 +126,16 @@ register('sectorFlow', {
         </div>
       </div>
 
-      <!-- Sector heatmap grid — top movers only -->
-      <div class="sf-grid">
-        ${topSectors.map(s => buildTile(s, intensityClass(s, absFlows))).join('')}
+      <!-- Sorted magnitude bars — top movers by flow -->
+      <div class="sf-bars">
+        ${topSectors.map(s => buildBar(s, maxAbsFlow)).join('')}
       </div>
 
       <!-- Legend -->
       <div class="sf-legend">
         <div class="sf-legend-item"><div class="sf-legend-dot bull"></div><span>Calls leading</span></div>
         <div class="sf-legend-item"><div class="sf-legend-dot bear"></div><span>Puts leading</span></div>
-        <span style="margin-left:auto;font-size:var(--text-xs);color:var(--text-dim);">top 6 by flow</span>
+        <span class="sf-legend-note">bar length = net flow · top 6</span>
       </div>`;
   },
 });

@@ -38,6 +38,15 @@ function formatEventDate(dateStr) {
   } catch { return dateStr; }
 }
 
+// Non-color redundancy: any signed numeric figure carries an explicit +/- prefix.
+function signedFigure(v) {
+  const s = String(v).trim();
+  if (/^[+\-▲▼]/.test(s)) return s;                 // already prefixed
+  const num = parseFloat(s.replace(/[^0-9.\-]/g, ''));
+  if (isNaN(num) || num === 0) return s;             // non-numeric or flat — leave as-is
+  return `${num > 0 ? '+' : '-'}${s.replace(/^-/, '')}`;
+}
+
 register('economicCalendar', {
   title: 'Economic Calendar',
 
@@ -57,12 +66,12 @@ register('economicCalendar', {
     if (applySlotState(container, slot)) return;
     if (!slot?.data) { renderEmpty(container.querySelector('#ec-items') ?? container, 'No calendar data'); return; }
 
-    // Prioritize high-impact events first, then medium, then low; show up to 6
+    // Tertiary "what's coming" strip — the NEXT 2-3 events only, high-impact first.
     const all    = slot.data.events ?? [];
     const order  = { high: 0, medium: 1, low: 2 };
     const events = [...all]
       .sort((a, b) => (order[a.impact] ?? 3) - (order[b.impact] ?? 3))
-      .slice(0, 6);
+      .slice(0, 3);
 
     const itemsEl = container.querySelector('#ec-items');
     if (!itemsEl) return;
@@ -84,14 +93,14 @@ register('economicCalendar', {
         <div class="ec-card" style="border-color:${bdr};background:${bg};">
           <div class="ec-card-top">
             <div class="ec-impact-bullets">${impactBullets(ev.impact)}</div>
+            <div class="ec-event-name" title="${(ev.event ?? '').replace(/"/g, '&quot;')}">${ev.event ?? '—'}</div>
             <div class="ec-time" style="color:${col};">${ev.time ?? '—'}</div>
           </div>
-          <div class="ec-date">${formatEventDate(ev.date)}</div>
-          <div class="ec-event-name" title="${(ev.event ?? '').replace(/"/g, '&quot;')}">${ev.event ?? '—'}</div>
-          <div class="ec-figures">
-            ${hasActual   ? `<div class="ec-figure"><span class="ec-fig-label">ACTUAL</span><span class="ec-fig-val is-actual">${ev.actual}</span></div>` : ''}
-            ${hasForecast ? `<div class="ec-figure"><span class="ec-fig-label">FCST</span><span class="ec-fig-val">${ev.forecast}</span></div>` : ''}
-            ${hasPrev     ? `<div class="ec-figure"><span class="ec-fig-label">PREV</span><span class="ec-fig-val is-prev">${ev.previous}</span></div>` : ''}
+          <div class="ec-card-meta">
+            <span class="ec-date">${formatEventDate(ev.date)}</span>
+            ${hasActual   ? `<span class="ec-fig"><span class="ec-fig-label">ACT</span> <span class="ec-fig-val is-actual">${signedFigure(ev.actual)}</span></span>` : ''}
+            ${hasForecast ? `<span class="ec-fig"><span class="ec-fig-label">FCST</span> <span class="ec-fig-val">${signedFigure(ev.forecast)}</span></span>` : ''}
+            ${hasPrev     ? `<span class="ec-fig"><span class="ec-fig-label">PREV</span> <span class="ec-fig-val is-prev">${signedFigure(ev.previous)}</span></span>` : ''}
           </div>
         </div>`;
     }).join(`<div class="ec-sep"></div>`);

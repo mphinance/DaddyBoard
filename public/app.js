@@ -32,11 +32,16 @@
 export const fmt = {
   currency(n) {
     if (n == null || isNaN(n)) return '—';
-    const abs = Math.abs(n);
-    if (abs >= 1_000_000_000) return `$${(n / 1_000_000_000).toFixed(2)}B`;
-    if (abs >= 1_000_000)     return `$${(n / 1_000_000).toFixed(2)}M`;
-    if (abs >= 1_000)         return `$${(n / 1_000).toFixed(1)}K`;
-    return `$${n.toFixed(0)}`;
+    // Sign goes BEFORE the $ ("-$600M", never "$-600M"); no trailing ".0K".
+    const sign = n < 0 ? '-' : '';
+    const a = Math.abs(n);
+    if (a >= 1_000_000_000) return `${sign}$${(a / 1_000_000_000).toFixed(2)}B`;
+    if (a >= 1_000_000)     return `${sign}$${(a / 1_000_000).toFixed(2)}M`;
+    if (a >= 1_000) {
+      const k = a / 1_000;
+      return `${sign}$${k.toFixed(k >= 100 ? 0 : 1)}K`;
+    }
+    return `${sign}$${a.toFixed(0)}`;
   },
   pct(n, decimals = 1) {
     if (n == null || isNaN(n)) return '—';
@@ -170,9 +175,9 @@ function tickClock() {
     hour: 'numeric', minute: '2-digit', second: '2-digit',
     hour12: true, timeZone: 'America/New_York',
   });
-  document.getElementById('footer-clock')?.let?.(el => el.textContent = str)
-  || (document.getElementById('footer-clock') && (document.getElementById('footer-clock').textContent = str));
-  document.getElementById('header-clock') && (document.getElementById('header-clock').textContent = str);
+  // One canonical clock on the wall — the header clock. (Footer clock removed.)
+  const headerClock = document.getElementById('header-clock');
+  if (headerClock) headerClock.textContent = str;
 }
 
 function startClock() {
@@ -191,16 +196,11 @@ function updatePhaseChrome(market) {
     : (phase === 'premarket' ? 'is-pre'
     : (phase === 'afterhours' ? 'is-after' : 'is-closed'));
 
-  ['footer-phase-dot', 'header-phase-dot'].forEach(id => {
-    const dot = document.getElementById(id);
-    if (!dot) return;
-    dot.className = `phase-dot ${dotClass}`;
-  });
+  const dot = document.getElementById('header-phase-dot');
+  if (dot) dot.className = `phase-dot ${dotClass}`;
 
-  ['footer-phase-label', 'header-phase-label'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = label ?? phase ?? '—';
-  });
+  const phaseLabel = document.getElementById('header-phase-label');
+  if (phaseLabel) phaseLabel.textContent = label ?? phase ?? '—';
 
   document.body.classList.toggle('market-closed', !isOpen);
 }
@@ -280,9 +280,11 @@ async function poll() {
 
   _lastState = state;
 
-  // Mock badge
+  // Mock badge — the ribbon overlays the top-right corner, so reserve header
+  // space (via body class) to keep the clock/phase clear of it.
   const mockBadge = document.getElementById('mock-badge');
   if (mockBadge) mockBadge.classList.toggle('is-visible', !!state.mockMode);
+  document.body.classList.toggle('has-mock-badge', !!state.mockMode);
 
   // Phase chrome
   updatePhaseChrome(state.market);
