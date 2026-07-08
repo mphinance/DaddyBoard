@@ -142,11 +142,17 @@ that boots straight into a full-screen Chromium showing **one URL** — no deskt
 no login, nothing to configure on-screen. It's the least-fuss wall display. It's
 built on Raspberry Pi OS, so you can run the DaddyBoard daemon on the same Pi.
 
+Two separate files do two separate jobs here, so don't confuse them:
+`fullpageos.txt` (a **FullPageOS** file) just tells Chromium *which URL to open*;
+`config.json` (**DaddyBoard's** file) holds your `td_live_` **API key** so the
+daemon can fetch data. The browser file can't hold your key — you need both.
+
 **1. Flash it.** Download the latest FullPageOS image (or use the *Raspberry Pi
 Imager* → "Other specific-purpose OS"), flash to an SD card, and before ejecting,
-edit two files on the `boot` partition:
+edit on the `boot` partition:
 
-- `fullpageos.txt` → set the single line to `http://localhost:4321`
+- `fullpageos.txt` → set the single line to `http://localhost:4321` (the URL
+  Chromium opens on boot).
 - (Wi-Fi/SSH) enable SSH and set your network via *Imager*'s settings, or the
   usual `wpa_supplicant.conf` / `ssh` files.
 
@@ -155,7 +161,7 @@ edit two files on the `boot` partition:
 sudo apt update && sudo apt install -y nodejs npm git
 git clone https://github.com/mphinance/DaddyBoard.git ~/DaddyBoard
 cd ~/DaddyBoard && npm install
-cp config.example.json config.json     # add your td_live_ key
+cp config.example.json config.json     # add your td_live_ key (NOT the URL)
 ```
 
 **3. Keep the daemon running on boot** (same service as method B below):
