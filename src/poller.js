@@ -237,7 +237,11 @@ async function fetchPanel(panelName, toolName, args = {}) {
 // ---------------------------------------------------------------------------
 
 async function pollUnusualActivity() {
-  await fetchPanel('unusualActivity', 'get_unusual_activity', { limit: 25 });
+  // minScore MUST be explicit. Omitting it makes the MCP tool inherit the
+  // service default of 95, which returns [] on any session where nothing scores
+  // ≥95 (a common, quiet-market state) — while the web app's REST feed passes
+  // 70. Pass 70 here so the board's tape matches the site row-for-row.
+  await fetchPanel('unusualActivity', 'get_unusual_activity', { limit: 25, minScore: 70 });
   // After UA updates, rederive the featured symbol
   state.featuredSymbol = deriveFeaturedSymbol();
 }
